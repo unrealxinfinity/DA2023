@@ -46,7 +46,7 @@ void Network::setSelected(bool selected) {
     this->selected = selected;
 }
 
-void Network::setReverse(Network *reverse) const {
+void Network::setReverse(Network *reverse)  {
     this->reverse = reverse;
 }
 

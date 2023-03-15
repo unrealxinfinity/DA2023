@@ -15,7 +15,7 @@
 
 using namespace std;
 
-typedef std::unordered_map<Network,Network*, NetworkHash> Networks;
+typedef std::unordered_map<string,Network*> Networks;
 /************************* Station  **************************/
 class Station {
 public:
@@ -45,7 +45,7 @@ public:
 
 protected:
     string Name, District, Municipality, Township, Line;
-    mutable Networks adj;
+
 
     // auxiliary fields
     bool visited = false;
@@ -58,6 +58,8 @@ protected:
     mutable Networks incoming;
 
     int queueIndex = 0;
+public:
+    mutable Networks adj;
 };
 struct StationHash{
     size_t operator()(const Station &other) const{

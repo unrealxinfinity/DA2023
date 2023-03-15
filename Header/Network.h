@@ -28,7 +28,7 @@ public:
     int getFlow() const;
     bool operator==(const Network &other ) const;
     void setSelected(bool selected);
-    void setReverse(Network *reverse) const;
+    void setReverse(Network *reverse) ;
     void setFlow(int flow);
 protected:
     string dest; // destination Station
@@ -44,10 +44,10 @@ protected:
 
     int flow; // for flow-related problems
 };
-struct NetworkHash{
-    size_t operator()(const Network &other) const{
-        return hash<std::string>()(other.getDest());
+/*struct NetworkHash{
+    size_t operator()(const string &other) const{
+        return hash<std::string>()(other);
     }
-};
+};*/
 
 #endif //UNTITLED4_NETWORK_H
