@@ -22,7 +22,7 @@ Station::Station(string Name, string District, string Municipality, string Towns
  */
 
 
-Network* Station::addNetwork(Station* dest, int capacity,string service) {
+Network * Station::addNetwork(Station* dest, int capacity,string service) const {
 
     auto newNetwork = new Network(this->getName() , dest->getName(), capacity , service);
     adj.insert(*newNetwork);

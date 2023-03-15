@@ -39,14 +39,14 @@ public:
     void setIndegree(unsigned int indegree);
     void setDist(double dist);
     void setPath(Network* path);
-    Network* addNetwork(Station* dest, int w,string service);
+    Network * addNetwork(Station* dest, int w, string service) const;
     bool removeNetwork(string destName);
 
     //friend class MutablePriorityQueue<Station>;
 
 protected:
     string Name, District, Municipality, Township, Line;
-    Networks adj;
+    mutable Networks adj;
 
     // auxiliary fields
     bool visited = false;

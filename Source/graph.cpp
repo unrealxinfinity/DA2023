@@ -44,12 +44,13 @@ bool Graph::addStation(string name) {
 bool Graph::addBidirectionalNetwork(string src, string dest, double w,string service) {
     auto source_it= StationSet.find(Station(src));
     auto destination_it = StationSet.find(Station(dest));
-    auto source=*source_it;
-    auto target=*destination_it;
+    Station *source= const_cast<Station *>(&(*source_it));
+    Station *target= const_cast<Station *>(&(*destination_it));
 
     if (source_it == StationSet.end() || destination_it == StationSet.end()) return false;
-    auto e1 = source.addNetwork(&target, w,service);
-    auto e2 = target.addNetwork(&source, w,service);
+    auto e1 = source_it->addNetwork(target, w,service);
+
+    auto e2 = destination_it->addNetwork(source, w,service);
     e1->setReverse(e2);
     e2->setReverse(e1);
     return true;
