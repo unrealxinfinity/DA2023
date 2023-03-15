@@ -52,9 +52,10 @@ bool Graph::addBidirectionalNetwork(string src, string dest, double w,string ser
     if (source_it == StationSet.end() || destination_it == StationSet.end()) return false;
     auto e1 = source_it->addNetwork(target, w,service);
     auto e2 = destination_it->addNetwork(source, w,service);
-    auto targetNet=source->adj.find(e1->getDest());
-
-
+    auto targetNet1=source->adj.find(e1->getDest());
+    auto targetNet2 = target->adj.find(e2->getDest());
+    targetNet1->second->setReverse(targetNet2->second);
+    targetNet2->second->setReverse(targetNet1->second);
     return true;
 }
 
