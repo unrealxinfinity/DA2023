@@ -4,11 +4,19 @@
 #include "../Header/Network.h"
 /********************** Network  ****************************/
 
-Network::Network(string orig, string dest, int capacity, string service): orig(orig), dest(dest), capacity(capacity), service(service) {}
+Network::Network(string orig, string dest, int capacity, string service): orig(orig), dest(dest), capacity(capacity), service(service),flow(0) {}
+Network::Network(string d){
+    orig="";
+    dest=d;
+    capacity=0;
+    service="";
+    flow=0;
 
+}
 bool Network::operator==(const Network &other ) const{
     return other.getDest() == this->getDest();
 }
+
 
 string Network::getDest() const {
     return this->dest;
@@ -38,7 +46,7 @@ void Network::setSelected(bool selected) {
     this->selected = selected;
 }
 
-void Network::setReverse(Network *reverse) {
+void Network::setReverse(Network *reverse) const {
     this->reverse = reverse;
 }
 

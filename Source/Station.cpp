@@ -22,12 +22,12 @@ Station::Station(string Name, string District, string Municipality, string Towns
  */
 
 
-Network * Station::addNetwork(Station* dest, int capacity,string service) const {
+Network* Station::addNetwork(Station* dest, int capacity,string service) const {
 
     auto newNetwork = new Network(this->getName() , dest->getName(), capacity , service);
-    adj.insert(*newNetwork);
+    adj.insert({*newNetwork,newNetwork});
+    dest->incoming.insert({*newNetwork,newNetwork});
 
-    dest->incoming.insert(*newNetwork);
     return newNetwork;
 }
 
@@ -41,8 +41,8 @@ bool Station::removeNetwork(string destName) {
     bool removedNetwork = false;
     auto it = adj.find(Network("", destName, 0, ""));
     while (it != adj.end()) {
-        Network Network = *it;
-        string dest = Network.getDest();
+        Network network = it->first;
+        string dest = network.getDest();
 
         /* if (dest== destName) {
             it = adj.erase(it);

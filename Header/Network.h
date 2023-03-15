@@ -19,7 +19,7 @@ using namespace std;
 class Network{
 public:
     Network(string orig, string dest, int w, string service);
-
+    Network(string dest);
     string getDest() const;
     int getcapacity() const;
     bool isSelected() const;
@@ -28,7 +28,7 @@ public:
     int getFlow() const;
     bool operator==(const Network &other ) const;
     void setSelected(bool selected);
-    void setReverse(Network *reverse);
+    void setReverse(Network *reverse) const;
     void setFlow(int flow);
 protected:
     string dest; // destination Station

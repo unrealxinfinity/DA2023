@@ -10,13 +10,12 @@
 #include <queue>
 #include <limits>
 #include <algorithm>
-#include <unordered_set>
 #include "Network.h"
-
+#include "unordered_map"
 
 using namespace std;
 
-typedef std::unordered_set<Network, NetworkHash> Networks;
+typedef std::unordered_map<Network,Network*, NetworkHash> Networks;
 /************************* Station  **************************/
 class Station {
 public:
@@ -39,7 +38,7 @@ public:
     void setIndegree(unsigned int indegree);
     void setDist(double dist);
     void setPath(Network* path);
-    Network * addNetwork(Station* dest, int w, string service) const;
+    Network* addNetwork(Station* dest, int w, string service) const;
     bool removeNetwork(string destName);
 
     //friend class MutablePriorityQueue<Station>;
@@ -56,7 +55,7 @@ protected:
     Network* path;
 
 
-    Networks incoming;
+    mutable Networks incoming;
 
     int queueIndex = 0;
 };

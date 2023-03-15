@@ -6,6 +6,6 @@ int main() {
 
     Graph g=Graph(path1,path2);
     auto it=g.StationSet.begin();
-    cout<<it->getAdj().size()<<endl;
+
     return 0;
 }
