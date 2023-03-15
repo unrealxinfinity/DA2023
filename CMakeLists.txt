@@ -3,4 +3,5 @@ project(untitled4)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(untitled4 main.cpp graph.h graph.cpp StationNetwork.h)
+add_executable(untitled4 main.cpp Source/graph.cpp Source/Station.cpp Source/Network.cpp)
+target_include_directories(untitled4 PUBLIC Header/)
