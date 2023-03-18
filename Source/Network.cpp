@@ -3,7 +3,7 @@
 //
 #include "../Header/Network.h"
 /********************** Network  ****************************/
-
+Network::Network() {}
 Network::Network(string orig, string dest, int capacity, string service): orig(orig), dest(dest), capacity(capacity), service(service),flow(0) {}
 Network::Network(string d){
     orig="";
