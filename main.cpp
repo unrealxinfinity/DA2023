@@ -6,10 +6,26 @@ using namespace std;
 bool is_validStation(Graph graph, string name) {
     name = graph.find_code(name);
     if(name == "error") return false;
-    if (graph.getStationSet().find(name)!=graph.getStationSet().end()) return true;
-    return false;
+    //if (graph.getStationSet().find(name)!=graph.getStationSet().end()) return true;
+    return true;
 }
+Graph LoadGraph(){
+    string stationsPath,networkPath;
+    cout<<"Please indicate the path for the file that contains Stations:"<<endl;
+    cin>>stationsPath;
+    cout<<"Please indicate the path for the file that contains networks:"<<endl;
+    cin>> networkPath;
+    Graph g = Graph(stationsPath,networkPath);
+    if(g.StationSet.empty()){
+        cout<<"Graph failed to initialize, check the input paths!"<<endl;
+    }
+    else{
+        cout<<"Graph initialized successfully!"<<endl;
+        cout<<"\n";
+    }
+    return g;
 
+}
 void MetricMenu(Graph *graph) {
     bool open = true;
     string src, target;
@@ -146,24 +162,29 @@ void FailuresMenu(Graph* graph) {
 int main() {
     std::string path1="../DataSet/stations.csv";
     std::string path2="../DataSet/network.csv";
-    Graph graph=Graph(path1,path2);
-    graph.print_edmundsKarp("Santarém", "Lisboa Oriente");
-    //graph.print_all_station_pairs();
 
+    //graph.print_edmundsKarp("Santarém", "Lisboa Oriente");
+    //graph.print_all_station_pairs();
+    Graph graph;
+    graph= Graph(path1,path2);
+    graph.print_all_station_pairs();
+   /*
     bool on = true;
     while (on) {
         int input;
-        cout << "1 -> Basic Service Metrics\n"
-                "2 -> Operation Cost Optimization\n"
-                "3 -> Reliability and Sensitivity to Line Failures\n"
+        cout << "1 -> Load Graph (Must initialize for other functions to work)\n"
+                "2 -> Basic Service Metrics\n"
+                "3 -> Operation Cost Optimization\n"
+                "4 -> Reliability and Sensitivity to Line Failures\n"
                 "0 - Quit\n";
         while(!(cin >> input)) {
             cin.clear();
             cin.ignore(INT_MAX, '\n');
             cout << "Invalid input!\n";
-            cout << "1 -> Basic Service Metrics\n"
-                    "2 -> Operation Cost Optimization\n"
-                    "3 -> Reliability and Sensitivity to Line Failures\n"
+            cout << "1- Load Graph(Must initialize once for other function)"
+                    "2 -> Basic Service Metrics\n"
+                    "3 -> Operation Cost Optimization\n"
+                    "4 -> Reliability and Sensitivity to Line Failures\n"
                     "0 - Quit\n";
         }
         switch (input) {
@@ -171,18 +192,21 @@ int main() {
                 on=false;
                 break;
             case 1:
-                MetricMenu(&graph);
+                graph=LoadGraph();
                 break;
             case 2:
-                OptimizationMenu(&graph);
+                MetricMenu(&graph);
                 break;
             case 3:
+                OptimizationMenu(&graph);
+                break;
+            case 4:
                 FailuresMenu(&graph);
                 break;
             default:
                 cout << "Invalid input!\n";
                 break;
         }
-    }
+    }*/
     return 0;
 }
