@@ -9,7 +9,7 @@
 #include <vector>
 #include <queue>
 #include <iostream>
-#include <unordered_set>
+#include <unordered_map>
 #include <stack>
 #include <cmath>
 #include <fstream>
@@ -21,22 +21,28 @@
 
 using namespace std;
 
-
-typedef std::unordered_set<Station,StationHash> Stations;
+typedef unordered_map<string,Station> Stations;
 class Graph {
 public:
     Graph(const string station_file,const string network_file);
     ~Graph();
     bool addStation(string name);
     bool addNetwork(string src, string dest, int capacity, string service);
-    bool addBidirectionalNetwork(string src, string dest, double w,string service);
+    bool addBidirectionalNetwork(string src, string dest, int w,string service);
+
+    string find_code(string name);
 
     size_t getNumStation() const;
     Stations getStationSet() const;
     void insertStations();
     void insertNetworks();
+
+    void print_edmundsKarp(string source, string target);
+    void print_all_station_pairs();
+
     int bfs(string source, string target);
-    void edmondsKarp(string source, string target);
+    int edmondsKarp(string source, string target);
+    vector<pair<string, string>> stationpairs();
     Stations StationSet;
 private:
     string station_file;

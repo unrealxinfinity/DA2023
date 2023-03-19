@@ -13,11 +13,11 @@
 #include <unordered_set>
 #include <string>
 using namespace std;
-/********************** Network
- *****************************/
+/********************** Network *****************************/
 
 class Network{
 public:
+    Network();
     Network(string orig, string dest, int w, string service);
     Network(string dest);
     string getDest() const;
@@ -30,19 +30,18 @@ public:
     void setSelected(bool selected);
     void setReverse(Network *reverse) ;
     void setFlow(int flow);
+    void setResid(int resid);
 protected:
     string dest; // destination Station
     int capacity; // Network// capacity, can also be used for capacity
     string service;
     // auxiliary fields
     bool selected = false;
-
-    // used for bidirectional Network
-    //s
+    // used for bidirectional Networks
     string orig;
     Network* reverse;
 
-    int flow; // for flow-related problems
+    int flow = 0; // for flow-related problems
 };
 /*struct NetworkHash{
     size_t operator()(const string &other) const{

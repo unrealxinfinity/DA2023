@@ -5,6 +5,8 @@
 
 /************************* Station  **************************/
 
+Station::Station() {}
+
 Station::Station(string Name, string District, string Municipality, string Township, string Line):Name(Name),District(District),Municipality(Municipality),Township(Township),Line(Line){
 }
 
@@ -22,11 +24,11 @@ Station::Station(string Name, string District, string Municipality, string Towns
  */
 
 
-Network* Station::addNetwork(Station* dest, int capacity,string service) const {
-
-    auto newNetwork = new Network(this->getName() , dest->getName(), capacity , service);
-    adj.insert({newNetwork->getDest(),newNetwork});
-    dest->incoming.insert({newNetwork->getDest(),newNetwork});
+Network Station::addNetwork(Station* dest, int capacity,string service) {
+    Network newNetwork = Network(this->getName() , dest->getName(), capacity , service);
+    adj.insert(pair<string,Network>(newNetwork.getDest(),newNetwork));
+    adj_cap += capacity;
+    dest->incoming.insert({newNetwork.getOrig(),&newNetwork});
     return newNetwork;
 }
 
@@ -77,11 +79,11 @@ bool Station::operator==(const Station &other) const{
 string Station::getName() const {
     return this->Name;
 }
-
+/*
 Networks Station::getAdj() const {
     return this->adj;
 }
-
+*/
 bool Station::isVisited() const {
     return this->visited;
 }
@@ -97,12 +99,21 @@ unsigned int Station::getIndegree() const {
 double Station::getDist() const {
     return this->dist;
 }
+int Station::getBN() const {
+    return this->bottleneck;
+}
+int Station::getInc_cap() const {
+    return this->incoming_cap;
+}
+int Station::getAdj_cap() const {
+    return this->adj_cap;
+}
 
 Network* Station::getPath() const {
     return this->path;
 }
 
-Networks Station::getIncoming() const {
+PointerNetworks Station::getIncoming() const {
     return this->incoming;
 }
 
@@ -124,6 +135,15 @@ void Station::setIndegree(unsigned int indegree) {
 
 void Station::setDist(double dist) {
     this->dist = dist;
+}
+void Station::setBN(int bn) {
+    this->bottleneck = bn;
+}
+void Station::setInc_cap(int inc_cap) {
+    this->incoming_cap = inc_cap;
+}
+void Station::setAdj_cap(int adj_cap) {
+    this->adj_cap = adj_cap;
 }
 
 void Station::setPath(Network* path) {
