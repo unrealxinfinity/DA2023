@@ -7,12 +7,13 @@ string Graph::find_code(string name) {
     if(StationSet.find(name) != StationSet.end()){
         return name;
     }
-    for (Stations::iterator iter=StationSet.begin(); iter!=StationSet.end();++iter) {
-        if (iter->second.getName()==name) return iter->first;
-    }
     return "error";
 }
+Graph::Graph() {
+    station_file="";
+    network_file="";
 
+}
 Graph::Graph(const string sf, const string nf) {
     station_file=sf;
     network_file=nf;
@@ -61,88 +62,98 @@ bool Graph::addBidirectionalNetwork(string src, string dest, int w,string servic
 
 
 Graph::~Graph() {
+
+}
+bool Graph::testandvisitCurrency(queue<string> &q, Network* network, Station *source, Station *target, int flow){
+    if((!target->isVisited() && (flow > 0))){
+        target->setVisited(true);
+        target->setPath(network);
+        target->setBN(min(source->getBN(), flow));
+        q.push(target->getName());
+        return true;
+    }
+    else if(network->getFlow() == network->getcapacity()){
+        if(target->getCurrency()<source->getCurrency())
+    }
+    return false;
+}
+bool Graph::testandvisit(queue<string> &q, Network* network, Station *source, Station *target, int flow){
+    if((!target->isVisited() && (flow > 0))){
+        target->setVisited(true);
+        target->setPath(network);
+        target->setBN(min(source->getBN(), flow));
+        q.push(target->getName());
+        return true;
+    }
+    return false;
 }
 int Graph::bfs(string source, string target){
+    for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+        iter->second.setVisited(false);
+        iter->second.setPath(nullptr);
+    }
     queue<string> q;
-    Station& station = StationSet.find(source)->second;
-    station.setBN(INT_MAX);
-    station.setVisited(true);
+    Station* station = &StationSet[source];
+    station->setBN(INT_MAX);
+    if(source == target) station->setBN(0);
+    station->setVisited(true);
     q.push(source);
     bool a = false;
-    while(!q.empty()){
+    while(!q.empty() && !a){
         string v = q.front();
         q.pop();
-        if(a || (source == target)) break;
-        Station& st = StationSet.find(v)->second;
-        for(Networks::iterator it = st.adj.begin(); it != st.adj.end(); it++){
+        station = &StationSet[v];
+        Station *dest;
+        for(Networks::iterator it = station->adj.begin(); it != station->adj.end(); it++){
             int capacity = it->second.getcapacity();
             string d = it->second.getDest();
-            Station& dest = StationSet.find(d)->second;
-            if((!dest.isVisited() && (capacity-it->second.getFlow()) > 0)){
-                dest.setVisited(true);
-                dest.setPath(&it->second);
-                dest.setBN(min(st.getBN(), capacity-it->second.getFlow()));
-                q.push(d);
-                if(d == target) a = true;
-            }
+            dest = &StationSet[d];
+            if(testandvisit(q, &it->second, station, dest, capacity - it->second.getFlow()) && (target == d)) a = true;
         }
-        for(PointerNetworks::iterator it = st.incoming.begin(); it != st.incoming.end(); it++){
+        for(PointerNetworks::iterator it = station->incoming.begin(); it != station->incoming.end(); it++){
             string o = it->first;
-            Station& orig = StationSet.find(o)->second;
-            if(!orig.isVisited() && (it->second->getFlow() > 0)){
-                orig.setVisited(true);
-                orig.setPath(it->second);
-                it->second->setSelected(true);
-                orig.setBN(min(st.getBN(), it->second->getFlow()));
-                q.push(o);
-                if(o == target) a = true;
-            }
+            dest = &StationSet[o];
+            testandvisit(q, it->second, dest, station, it->second->getFlow());
         }
     }
-    Station& station2 = StationSet.find(target)->second;
-    //station = StationSet[target];
-    if(!a)return 0;
-    int bottleneck = station2.getBN();
-    Network *network = station2.getPath();
-    while(true){
-        if(network->isSelected()) {
+    if(!a) return 0;
+    else {
+        station = &StationSet[target];
+        return station->getBN();
+    }
+}
+void Graph::augmentFlowAlongPath(string source, string target, int bottleneck){
+    Station *station = &StationSet[target];
+    Network *network = station->getPath();
+    while(network != nullptr){
+        if(network->getDest() != station->getName()) {
             network->setFlow(network->getFlow() - bottleneck);
-            network->setSelected(false);
-            Station &station3 = StationSet.find(network->getDest())->second;
-            if(station3.getName() == source) break;
-            network = station3.getPath();
+            station = &StationSet[network->getDest()];
+            network = station->getPath();
         }
         else{
             network->setFlow(network->getFlow()+bottleneck);
-            Station &station3 = StationSet.find(network->getOrig())->second;
-            if(station3.getName() == source) break;
-            network = station3.getPath();
+            station = &StationSet[network->getOrig()];
+            network = station->getPath();
         }
     }
-
-    return bottleneck;
 }
-int Graph::edmondsKarp(string source, string target) {
+int Graph:: edmondsKarp(string source, string target) {
     int max_flow = 0;
     int flow = 0;
     for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+        iter->second.setCurrency(0);
         for(Networks::iterator it = iter->second.adj.begin(); it != iter->second.adj.end(); it++){
             it->second.setFlow(0);
         }
     }
-    do {
-        for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
-            iter->second.setVisited(false);
-        }
-        if(max_flow == 10) {
-            int count = 0;
-        }
-        flow = bfs(source, target);
+    while((flow = bfs(source, target)) != 0){
+        augmentFlowAlongPath(source, target, flow);
         max_flow += flow;
-    }while(flow != 0);
+    }
     return max_flow;
 }
-vector<pair<string, string>> Graph::stationpairs(){
+vector<pair<string, string>> Graph::stationPairs(){
     int max = 0;
     string st = "blah";
     int sub_max = 0;
@@ -178,17 +189,24 @@ vector<pair<string, string>> Graph::stationpairs(){
     }
     return final;
 }
+
 void Graph::print_edmundsKarp(string source, string target){
     int flow = edmondsKarp(source, target);
     cout << "The maximum flow between " << source << " and " << target << " is " << flow << '\n';
 }
 void Graph::print_all_station_pairs(){
-    vector<pair<string,string>> final = stationpairs();
+    vector<pair<string,string>> final = stationPairs();
     cout << "From all pair of stations, the ones that require the most amount of trains when taking full of the existing network capacity are:\n";
     for(pair<string, string> p : final){
         cout << "From " << p.first << " -> " << p.second << '\n';
     }
     //cout << "The max flow betweeen these stations is " << final.first << '\n';
+}
+
+
+void Graph::duvidaprostor(string target){
+    Station *station = &StationSet[target];
+    cout << station->getAdj_cap() << '\n';
 }
 void Graph::insertStations() {
     ifstream fout(station_file);
