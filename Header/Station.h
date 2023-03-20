@@ -32,7 +32,6 @@ public:
     unsigned int getIndegree() const;
     double getDist() const;
     int getBN() const;
-    int getCurrency() const;
     int getInc_cap() const;
     int getAdj_cap() const;
     Network* getPath() const;
@@ -44,7 +43,6 @@ public:
     void setIndegree(unsigned int indegree);
     void setDist(double dist);
     void setBN(int bn);
-    void setCurrency(int currency);
     void setInc_cap(int inc_cap);
     void setAdj_cap(int adj_cap);
     void setPath(Network* path);
@@ -63,7 +61,6 @@ protected:
     int bottleneck = 0;
     int incoming_cap = 0;
     int adj_cap = 0;
-    int currency = 0;
     Network* path;
 
 

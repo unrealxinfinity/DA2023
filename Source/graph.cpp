@@ -64,18 +64,151 @@ bool Graph::addBidirectionalNetwork(string src, string dest, int w,string servic
 Graph::~Graph() {
 
 }
-bool Graph::testandvisitCurrency(queue<string> &q, Network* network, Station *source, Station *target, int flow){
+bool Graph::testandvisitCurrencyResid(queue<string> &q, Network* network, Station *source, Station *target, int flow){
     if((!target->isVisited() && (flow > 0))){
         target->setVisited(true);
         target->setPath(network);
+        if(network->getservice() == "STANDARD") network->setStandard(network->getStandard()+2);
+        else network->setAlfa(network->getAlfa()+4);
         target->setBN(min(source->getBN(), flow));
         q.push(target->getName());
         return true;
     }
-    else if(network->getFlow() == network->getcapacity()){
-        if(target->getCurrency()<source->getCurrency())
+    return false;
+}
+bool Graph::testandvisitCurrency(queue<string> &q, Network* network, Station *source, Station *target, int flow){
+    if((!target->isVisited() && (flow > 0))){
+        target->setVisited(true);
+        target->setPath(network);
+        if(network->getservice() == "STANDARD") network->setStandard(network->getStandard()+2);
+        else network->setAlfa(network->getAlfa()+4);
+        target->setBN(min(source->getBN(), flow));
+        q.push(target->getName());
+        return true;
     }
     return false;
+}
+int Graph::bfsCurrency(string source, string target){
+    for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+        iter->second.setVisited(false);
+        iter->second.setPath(nullptr);
+        for(Networks::iterator it = iter->second.adj.begin(); it != iter->second.adj.end(); it++){
+            it->second.setAlfa(0);
+            it->second.setStandard(0);
+        }
+    }
+    queue<string> q;
+    Station* station = &StationSet[source];
+    station->setBN(INT_MAX);
+    if(source == target) station->setBN(0);
+    station->setVisited(true);
+    q.push(source);
+    bool a = false;
+    while(!q.empty() && !a){
+        string v = q.front();
+        q.pop();
+        station = &StationSet[v];
+        Station *dest;
+        for(PointerNetworks::iterator it = station->incoming.begin(); it != station->incoming.end(); it++){
+            string o = it->first;
+            dest = &StationSet[o];
+            if(testandvisitCurrencyResid(q, it->second, dest, station, it->second->getFlow())){
+                //change currency path
+            }
+        }
+        for(Networks::iterator it = station->adj.begin(); it != station->adj.end(); it++){
+            int capacity = it->second.getcapacity();
+            string d = it->second.getDest();
+            dest = &StationSet[d];
+            if(testandvisitCurrency(q, &it->second, station, dest, capacity - it->second.getFlow()) && (target == d)) a = true;
+        }
+    }
+    station = &StationSet[target];
+    if(!station->isVisited()) return 0;
+    else {
+        return station->getBN();
+    }
+}
+void Graph::augmentFlowAlongPathCurrency(string source, string target, int bottleneck){
+    Station *station = &StationSet[target];
+    Network *network = station->getPath();
+    string temp = target;
+    while(network != nullptr){
+        if(network->getDest() != station->getName()) {
+            network->setFlow(network->getFlow() - bottleneck);
+            station = &StationSet[network->getDest()];
+            network = station->getPath();
+        }
+        else{
+            network->setFlow(network->getFlow()+bottleneck);
+            int currency = bottleneck * network->getAlfa() + bottleneck * network->getStandard();
+            network->add_values(currency, temp, bottleneck);
+            temp = network->getDest();
+            station = &StationSet[network->getOrig()];
+            network = station->getPath();
+        }
+    }
+}
+void Graph::reupdate_currency(string source, string target){
+    Station *station = &StationSet[target];
+    Network * network = station->getPath();
+    string temp = target;
+    while(station->getName()!=source){
+        if(network->getDest()!=target) {
+            for (pair<int, pair<string, int>> p: network->getStore()) {
+                if (p.second.first == "") {
+                    p.second.first = temp;
+                }
+            }
+        }
+        temp = network->getDest();
+        station = &StationSet[network->getOrig()];
+        network = station->getPath();
+    }
+}
+void Graph::update_currency(string orig, string source, string target, int currency, int flow){
+    Station *station = &StationSet[source];
+    station->setIndegree(currency+station->getIndegree());
+    station->setVisited(true);
+    if(target == source){
+        reupdate_currency(orig , target);
+    }
+    else {
+        for (Networks::iterator it = station->adj.begin(); it != station->adj.end(); it++) {
+            Station *dest = &StationSet[it->second.getDest()];
+            if (((it->second.getFlow() - it->second.getCurrencycap()) > 0) && (flow > 0) && !dest->isVisited()) {
+                int sum = min(it->second.getFlow(), flow);
+                if (it->second.getservice() == "STANDARD")
+                    it->second.add_values(station->getIndegree() + (sum * 2), "", sum);
+                else it->second.add_values(station->getIndegree() + (sum * 4), "", sum);
+                dest->setPath(&it->second);
+                it->second.setCurrencyCap(it->second.getCurrencycap() + sum);
+                flow -= sum;
+                update_currency(orig, it->second.getDest(), target, it->second.getStore()[0].first, sum);
+            }
+        }
+    }
+    station->setVisited(false);
+}
+int Graph:: edmondsKarpCurrency(string source, string target) {
+    edmondsKarp(source, target);
+    for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+        iter->second.setIndegree(0);
+        iter->second.setVisited(false);
+        for(Networks::iterator it = iter->second.adj.begin(); it != iter->second.adj.end(); it++){
+            it->second.setCurrencyCap(0);
+            it->second.reset();
+        }
+    }
+    update_currency(source, source, target, 0, INT_MAX);
+   /* int max_flow = 0;
+    int flow = 0;
+    while((flow = bfsCurrency(source, target)) != 0){
+        augmentFlowAlongPath(source, target, flow);
+        max_flow += flow;
+    }*/
+    Station *station = &StationSet[target];
+    station->getIndegree();
 }
 bool Graph::testandvisit(queue<string> &q, Network* network, Station *source, Station *target, int flow){
     if((!target->isVisited() && (flow > 0))){
@@ -87,6 +220,7 @@ bool Graph::testandvisit(queue<string> &q, Network* network, Station *source, St
     }
     return false;
 }
+
 int Graph::bfs(string source, string target){
     for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
         iter->second.setVisited(false);
@@ -116,9 +250,9 @@ int Graph::bfs(string source, string target){
             testandvisit(q, it->second, dest, station, it->second->getFlow());
         }
     }
-    if(!a) return 0;
+    station = &StationSet[target];
+    if(!station->isVisited()) return 0;
     else {
-        station = &StationSet[target];
         return station->getBN();
     }
 }
@@ -138,11 +272,10 @@ void Graph::augmentFlowAlongPath(string source, string target, int bottleneck){
         }
     }
 }
-int Graph:: edmondsKarp(string source, string target) {
+int Graph::edmondsKarp(string source, string target) {
     int max_flow = 0;
     int flow = 0;
     for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
-        iter->second.setCurrency(0);
         for(Networks::iterator it = iter->second.adj.begin(); it != iter->second.adj.end(); it++){
             it->second.setFlow(0);
         }

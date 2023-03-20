@@ -102,9 +102,6 @@ double Station::getDist() const {
 int Station::getBN() const {
     return this->bottleneck;
 }
-int Station::getCurrency() const {
-    return this->currency;
-}
 int Station::getInc_cap() const {
     return this->incoming_cap;
 }
@@ -141,9 +138,6 @@ void Station::setDist(double dist) {
 }
 void Station::setBN(int bn) {
     this->bottleneck = bn;
-}
-void Station::setCurrency(int currency) {
-    this->currency = currency;
 }
 void Station::setInc_cap(int inc_cap) {
     this->incoming_cap = inc_cap;

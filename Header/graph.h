@@ -44,10 +44,16 @@ public:
     void duvidaprostor(string target);
 
     int bfs(string source, string target);
+    int bfsCurrency(string source, string target);
     void augmentFlowAlongPath(string source, string target, int bottleneck);
+    void augmentFlowAlongPathCurrency(string source, string target, int bottleneck);
     bool testandvisit(queue<string> &q, Network * network, Station *source, Station *target, int flow);
     bool testandvisitCurrency(queue<string> &q, Network* network, Station *source, Station *target, int flow);
+    bool testandvisitCurrencyResid(queue<string> &q, Network* network, Station *source, Station *target, int flow);
     int edmondsKarp(string source, string target);
+    int edmondsKarpCurrency(string source, string target);
+    void update_currency(string orig, string source, string target, int currency, int flow);
+    void reupdate_currency(string source, string target);
     vector<pair<string, string>> stationPairs();
     Stations StationSet;
 private:

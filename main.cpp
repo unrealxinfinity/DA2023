@@ -160,15 +160,16 @@ void FailuresMenu(Graph* graph) {
 
 
 int main() {
-    std::string path1="../DataSet/stations.csv";
-    std::string path2="../DataSet/network.csv";
+    std::string path1="../DataSet/test_stations.csv";
+    std::string path2="../DataSet/test_network.csv";
 
-    //graph.print_edmundsKarp("Santarém", "Lisboa Oriente");
     //graph.print_all_station_pairs();
     Graph graph;
     graph= Graph(path1,path2);
-    graph.print_all_station_pairs();
-   /*
+    //graph.print_edmundsKarp("Santarém", "Lisboa Oriente");
+    //graph.print_all_station_pairs();
+    int a = graph.edmondsKarpCurrency("Casa Branca", "Viana do Castelo");
+    cout << a << " ";
     bool on = true;
     while (on) {
         int input;
@@ -207,6 +208,6 @@ int main() {
                 cout << "Invalid input!\n";
                 break;
         }
-    }*/
+    }
     return 0;
 }
