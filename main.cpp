@@ -91,6 +91,7 @@ void MetricMenu(Graph *graph) {
         }
     }
 }
+
 void OptimizationMenu(Graph* graph) {
     string src, target;
     cout << "Please provide the source station or write back to go back.\n";
