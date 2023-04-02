@@ -47,15 +47,6 @@ int Network::getFlow() const {
 int Network::getCurrencycap() const {
     return currency_cap;
 }
-int Network::getAlfa() const {
-    return Alfa;
-}
-int Network::getStandard() const {
-    return Standard;
-}
-vector<pair<int, pair<string, int>>> Network::getStore() const{
-    return store;
-}
 void Network::setSelected(bool selected) {
     this->selected = selected;
 }
@@ -67,22 +58,6 @@ void Network::setReverse(Network *reverse)  {
 void Network::setFlow(int flow) {
     this->flow = flow;
 }
-void Network::setAlfa(int alfa) {
-    this->Alfa = alfa;
-}
-void Network::setMemory(string memory){
-    this->memory = memory;
-}
-void Network::setStandard(int standard) {
-    this->Standard = standard;
-}
 void Network::setCurrencyCap(int currency_cap){
     this->currency_cap = currency_cap;
-}
-void Network::reset(){
-    vector<pair<int, pair<string, int>>> clean;
-    store = clean;
-}
-void Network::add_values(int currency, string dest, int flow){
-    store.push_back(pair<int, pair<string, int>>(currency, pair<string, int>(dest, flow)));
 }

@@ -32,7 +32,7 @@ public:
     unsigned int getIndegree() const;
     double getDist() const;
     int getBN() const;
-    int getInc_cap() const;
+    string getDad() const;
     int getAdj_cap() const;
     Network* getPath() const;
     PointerNetworks getIncoming() const;
@@ -43,11 +43,11 @@ public:
     void setIndegree(unsigned int indegree);
     void setDist(double dist);
     void setBN(int bn);
-    void setInc_cap(int inc_cap);
+    void setDad(string dad);
     void setAdj_cap(int adj_cap);
     void setPath(Network* path);
     Network addNetwork(Station* dest, int w, string service);
-    bool removeNetwork(string destName);
+    void removeNetwork(Station * destName);
 
     //friend class riorityQueue<Station>;
 
@@ -59,7 +59,7 @@ protected:
     unsigned int indegree;
     double dist = 0;
     int bottleneck = 0;
-    int incoming_cap = 0;
+    string dad = "";
     int adj_cap = 0;
     Network* path;
 

@@ -28,19 +28,11 @@ public:
     Network* getReverse() const;
     int getFlow() const;
     int getCurrencycap() const;
-    int getAlfa() const;
-    int getStandard() const;
-    vector<pair<int, pair<string, int>>> getStore() const;
     bool operator==(const Network &other ) const;
     void setSelected(bool selected);
     void setReverse(Network *reverse) ;
     void setFlow(int flow);
-    void setAlfa(int alfa);
     void setCurrencyCap(int currency_cap);
-    void setMemory(string memory);
-    void setStandard(int standard);
-    void reset();
-    void add_values(int currency, string dest, int flow);
 protected:
     string dest; // destination Station
     int capacity; // Network// capacity, can also be used for capacity
@@ -51,7 +43,6 @@ protected:
     // used for bidirectional Networks
     string orig;
     Network* reverse;
-    vector<pair<int, pair<string, int>>> store;
     int Alfa = 0;
     int Standard = 0;
     //int currency = 0;

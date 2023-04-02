@@ -40,22 +40,24 @@ public:
 
     void print_edmundsKarp(string source, string target);
     void print_all_station_pairs();
+    void print_reduced_connectivity(string source, string target);
+    void print_topk_reduced_connectivity(int k);
 
     void duvidaprostor(string target);
 
     int bfs(string source, string target);
-    int bfsCurrency(string source, string target);
     void augmentFlowAlongPath(string source, string target, int bottleneck);
-    void augmentFlowAlongPathCurrency(string source, string target, int bottleneck);
     bool testandvisit(queue<string> &q, Network * network, Station *source, Station *target, int flow);
-    bool testandvisitCurrency(queue<string> &q, Network* network, Station *source, Station *target, int flow);
-    bool testandvisitCurrencyResid(queue<string> &q, Network* network, Station *source, Station *target, int flow);
     int edmondsKarp(string source, string target);
-    int edmondsKarpCurrency(string source, string target);
-    void update_currency(string orig, string source, string target, int currency, int flow);
-    void reupdate_currency(string source, string target);
+    bool valid_remove(string source, string target);
     vector<pair<string, string>> stationPairs();
+    void max_flow_min_cost(string source, string target);
+    bool search(string source, string target);
+    void topk_reduced_connectivity(priority_queue <pair<int, pair<string, string>>> &pq);
+    void restore_maintenance();
+    void remove_network(string source, string target);
     Stations StationSet;
+    stack<Network> store;
 private:
     string station_file;
     string network_file;

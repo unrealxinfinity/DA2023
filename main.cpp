@@ -111,7 +111,7 @@ void OptimizationMenu(Graph* graph) {
 }
 void FailuresMenu(Graph* graph) {
     bool open = true;
-    string src, target;
+    string src, target, network_src, network_dest, final;
     while (open) {
         int input;
         cout << "1 -> Maximum number of trains between two stations in a network of reduced connectivity.\n"
@@ -146,6 +146,37 @@ void FailuresMenu(Graph* graph) {
                     getline(cin, target);
                 }
                 if (target == "back") break;
+                do {
+                    cout << "Please provide the station from which the unavailable network originates from or write back to go back\n";
+                    getline(cin, network_src);
+                    while (!is_validStation(*graph, network_src) && network_src != "back") {
+                        cout << "Please enter a valid station name!\n";
+                        getline(cin, network_src);
+                    }
+                    if (network_src == "back") break;
+                    cout << "Please provide the station from which the unavailable network arrives to or write back to go back\n";
+                    getline(cin, network_dest);
+                    while (!is_validStation(*graph, network_dest) && network_dest != "back") {
+                        cout << "Please enter a valid station name!\n";
+                        getline(cin, network_dest);
+                    }
+                    if (network_dest == "back") break;
+                    if(graph->valid_remove(network_src, network_dest)) {
+                        graph->remove_network(network_src, network_dest);
+                        cout << "Network has successfully been put on maintenance\n";
+                    }
+                    else cout << "The selected network does not connect from " << network_src << "to " << network_dest << "therefore it has not been put on maintenance\n";
+                    cout << "Do you wish to select more networks for maintenance?\n(Y/N)\n";
+                    getline(cin, final);
+                    while (final != "back" && final != "Y" && final != "Yes" && final != "yes" && final != "y" && final != "N" && final != "No" && final != "no" && final != "n") {
+                        cout << "Please enter a valid input!\n";
+                        getline(cin, final);
+                    }
+                    if(final == "back" || final == "N" || final == "No" || final == "no" || final == "n") break;
+                }while(true);
+                if(final == "back" || network_dest == "back" || network_src == "back") break;
+                graph->print_reduced_connectivity(src, target);
+                graph->restore_maintenance();
                 //graph->print_..;
                 break;
             case 2:
@@ -160,16 +191,16 @@ void FailuresMenu(Graph* graph) {
 
 
 int main() {
-    std::string path1="../DataSet/test_stations.csv";
-    std::string path2="../DataSet/test_network.csv";
+    std::string path1="../DataSet/stations.csv";
+    std::string path2="../DataSet/network.csv";d
 
     //graph.print_all_station_pairs();
     Graph graph;
     graph= Graph(path1,path2);
+    graph.valid_remove("Entroncamento", "Lisboa Oriente");
+    graph.print_topk_reduced_connectivity(5);
     //graph.print_edmundsKarp("Santarém", "Lisboa Oriente");
     //graph.print_all_station_pairs();
-    int a = graph.edmondsKarpCurrency("Casa Branca", "Viana do Castelo");
-    cout << a << " ";
     bool on = true;
     while (on) {
         int input;
