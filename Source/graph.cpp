@@ -64,19 +64,6 @@ bool Graph::addBidirectionalNetwork(string src, string dest, int w,string servic
 Graph::~Graph() {
 
 }
-bool Graph::testandvisitCurrency(queue<string> &q, Network* network, Station *source, Station *target, int flow){
-    if((!target->isVisited() && (flow > 0))){
-        target->setVisited(true);
-        target->setPath(network);
-        target->setBN(min(source->getBN(), flow));
-        q.push(target->getName());
-        return true;
-    }
-    else if(network->getFlow() == network->getcapacity()){
-        if(target->getCurrency()<source->getCurrency())
-    }
-    return false;
-}
 bool Graph::testandvisit(queue<string> &q, Network* network, Station *source, Station *target, int flow){
     if((!target->isVisited() && (flow > 0))){
         target->setVisited(true);
@@ -87,6 +74,7 @@ bool Graph::testandvisit(queue<string> &q, Network* network, Station *source, St
     }
     return false;
 }
+
 int Graph::bfs(string source, string target){
     for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
         iter->second.setVisited(false);
@@ -116,9 +104,9 @@ int Graph::bfs(string source, string target){
             testandvisit(q, it->second, dest, station, it->second->getFlow());
         }
     }
-    if(!a) return 0;
+    station = &StationSet[target];
+    if(!station->isVisited()) return 0;
     else {
-        station = &StationSet[target];
         return station->getBN();
     }
 }
@@ -138,11 +126,10 @@ void Graph::augmentFlowAlongPath(string source, string target, int bottleneck){
         }
     }
 }
-int Graph:: edmondsKarp(string source, string target) {
+int Graph::edmondsKarp(string source, string target) {
     int max_flow = 0;
     int flow = 0;
     for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
-        iter->second.setCurrency(0);
         for(Networks::iterator it = iter->second.adj.begin(); it != iter->second.adj.end(); it++){
             it->second.setFlow(0);
         }
@@ -189,6 +176,107 @@ vector<pair<string, string>> Graph::stationPairs(){
     }
     return final;
 }
+bool Graph::search(string source, string target){
+    for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+        iter->second.setVisited(false);
+        iter->second.setDist(INT_MAX);
+    }
+    Station *station = &StationSet[source];
+    station->setDist(0);
+    while(source != "finish"){
+        string best = "finish";
+        station->setVisited(true);
+        for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+            if(iter->second.isVisited()) continue;
+            for(PointerNetworks::iterator it = station->incoming.begin(); it != station->incoming.end(); it++){
+                if(it->second->getFlow() != 0){
+                    int value = station->getDist() + station->getIndegree();
+                }
+            }
+            for(Networks::iterator it = station->adj.begin(); it != station->adj.end(); it++){
+                Station *dest = &StationSet[it->second.getDest()];
+                if(it->second.getFlow() != 0){
+                    int currency;
+                    if(it->second.getservice() == "STANDARD") currency = 2;
+                    else currency = 4;
+                    int value = station->getDist() + station->getIndegree() - dest->getIndegree() - currency;
+                    if(dest->getDist() > value){
+                        dest->setDist(value);
+                        dest->setDad(source);
+                    }
+                }
+            }
+        }
+    }
+}
+void Graph::max_flow_min_cost(string source, string target){
+    for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+        for(Networks::iterator it = iter->second.adj.begin(); it != iter->second.adj.end(); it++){
+            it->second.setFlow(0);
+        }
+    }
+    int total_flow = 0;
+    int total_cost = 0;
+    while(search(source, target)){
+
+    }
+
+}
+void Graph::topk_reduced_connectivity(priority_queue <pair<int, pair<string, string>>> &pq) {
+    stack<Network> temp = store;
+    for (Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++) {
+        Station &station = iter->second;
+        for (Stations::iterator it = iter; it != StationSet.end(); it++) {
+            Station &s = it->second;
+            if (s.getName() != station.getName()) {
+                int max_flow_before_remove = edmondsKarp(station.getName(), s.getName());
+                while(!temp.empty()){
+                    remove_network(temp.top().getOrig(), temp.top().getDest());
+                    temp.pop();
+                }
+                int max_flow_after_remove = edmondsKarp(station.getName(), s.getName());
+                int dif = max_flow_before_remove - max_flow_after_remove;
+                pq.push(pair<int, pair<string, string>>(dif, pair<string, string>(station.getName(), s.getName())));
+                temp = store;
+                restore_maintenance();
+                store = temp;
+
+            }
+        }
+    }
+}
+void Graph::print_reduced_connectivity(string source, string target){
+    cout << "With the reduced connectivity:\n";
+    print_edmundsKarp(source, target);
+}
+void Graph::print_topk_reduced_connectivity(int k){
+    cout << "The top " << k << " stations who suffered the most out of the maintenance were:\n";
+    priority_queue <pair<int, pair<string, string>>> pq;
+    topk_reduced_connectivity(pq);
+    while(k > 0){
+        cout << pq.top().second.first << " <-> " << pq.top().second.second << " (" << pq.top().first << ")\n";
+        pq.pop();
+        k--;
+    }
+}
+void Graph::restore_maintenance(){
+    while(!store.empty()){
+        addBidirectionalNetwork(store.top().getOrig(), store.top().getDest(), store.top().getcapacity(), store.top().getservice());
+        store.pop();
+    }
+}
+bool Graph::valid_remove(string source, string target){
+    Station *station = &StationSet[source];
+    auto it = station->adj.find(target);
+    if(it == station->adj.end()) return false;
+    store.push(it->second);
+    return true;
+}
+void Graph::remove_network(string source, string target){
+    Station *station = &StationSet[source];
+    Station *dest = &StationSet[target];
+    station->removeNetwork(dest);
+}
 
 void Graph::print_edmundsKarp(string source, string target){
     int flow = edmondsKarp(source, target);
@@ -221,6 +309,7 @@ void Graph::insertStations() {
         getline(itStream, Township, ',');
         getline(itStream, Line, '\r');
 
+        if(StationSet.find(Name) != StationSet.end())continue;
         Station station = Station(Name, District, Municipality, Township, Line);
         StationSet.insert(pair<string, Station>(Name,station));
     }

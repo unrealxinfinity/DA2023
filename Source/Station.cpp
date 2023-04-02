@@ -38,13 +38,19 @@ Network Station::addNetwork(Station* dest, int capacity,string service) {
  * Returns true if successful, and false if such Network does not exist.
  */
 
-bool Station::removeNetwork(string destName) {
-    bool removedNetwork = false;
-    auto it = adj.find(destName);
-    while (it != adj.end()) {
+void Station::removeNetwork(Station *destName) {
+    auto it = adj.find(destName->Name);
+    auto iter = incoming.find(destName->Name);
+    adj.erase(it);
+    incoming.erase(iter);
+    it = destName->adj.find(Name);
+    iter = destName->incoming.find(Name);
+    destName->adj.erase(it);
+    destName->incoming.erase(iter);
+    /*while (it != adj.end()) {
         Network network = it->first;
         string dest = network.getDest();
-
+*/
         /* if (dest== destName) {
             it = adj.erase(it);
             // Also remove the corresponding Network from the incoming list
@@ -66,8 +72,6 @@ bool Station::removeNetwork(string destName) {
         }
     }
     return removedNetwork;*/
-    }
-    return 1;
 }
 bool Station::operator<(const Station & Station) const {
     return this->dist < Station.dist;
@@ -102,11 +106,8 @@ double Station::getDist() const {
 int Station::getBN() const {
     return this->bottleneck;
 }
-int Station::getCurrency() const {
-    return this->currency;
-}
-int Station::getInc_cap() const {
-    return this->incoming_cap;
+string Station::getDad() const {
+    return this->dad;
 }
 int Station::getAdj_cap() const {
     return this->adj_cap;
@@ -142,11 +143,8 @@ void Station::setDist(double dist) {
 void Station::setBN(int bn) {
     this->bottleneck = bn;
 }
-void Station::setCurrency(int currency) {
-    this->currency = currency;
-}
-void Station::setInc_cap(int inc_cap) {
-    this->incoming_cap = inc_cap;
+void Station::setDad(string dad) {
+    this->dad = dad;
 }
 void Station::setAdj_cap(int adj_cap) {
     this->adj_cap = adj_cap;

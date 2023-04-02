@@ -29,6 +29,9 @@ int Network::getcapacity() const {
 string Network::getOrig() const {
     return this->orig;
 }
+string Network::getservice() const{
+    return this->service;
+}
 
 Network* Network::getReverse() const {
     return this->reverse;
@@ -41,7 +44,9 @@ bool Network::isSelected() const {
 int Network::getFlow() const {
     return flow;
 }
-
+int Network::getCurrencycap() const {
+    return currency_cap;
+}
 void Network::setSelected(bool selected) {
     this->selected = selected;
 }
@@ -52,4 +57,7 @@ void Network::setReverse(Network *reverse)  {
 
 void Network::setFlow(int flow) {
     this->flow = flow;
+}
+void Network::setCurrencyCap(int currency_cap){
+    this->currency_cap = currency_cap;
 }
