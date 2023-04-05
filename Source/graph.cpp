@@ -296,6 +296,27 @@ void Graph::duvidaprostor(string target){
     Station *station = &StationSet[target];
     cout << station->getAdj_cap() << '\n';
 }
+
+
+void Graph::find_startofline(Station *dest, string line){
+    queue<string> q;
+    for(Networks::iterator it = dest->adj.begin(); it != dest->adj.end(); it++){
+        Station *station = &StationSet[it->second.getDest()];
+        if(station->getLine() == line)
+    }
+}
+void Graph::max_flow_from_lines(string target){
+    Station *dest = &StationSet[target];
+    stack<string> temp;
+    for(Networks::iterator it = dest->adj.begin(); it != dest->adj.end(); it++){
+        Station *station = &StationSet[it->second.getDest()];
+        temp.push(station->getLine());
+    }
+    while(!temp.empty()) {
+        find_startofline(dest, temp.top());
+        temp.pop();
+    }
+}
 void Graph::insertStations() {
     ifstream fout(station_file);
 
@@ -309,7 +330,7 @@ void Graph::insertStations() {
         getline(itStream, Township, ',');
         getline(itStream, Line, '\r');
 
-        if(StationSet.find(Name) != StationSet.end())continue;
+        if(StationSet.find(Name) != StationSet.end()) continue;
         Station station = Station(Name, District, Municipality, Township, Line);
         StationSet.insert(pair<string, Station>(Name,station));
     }

@@ -51,11 +51,13 @@ public:
     int edmondsKarp(string source, string target);
     bool valid_remove(string source, string target);
     vector<pair<string, string>> stationPairs();
+    void max_flow_from_lines(string target);
     void max_flow_min_cost(string source, string target);
     bool search(string source, string target);
     void topk_reduced_connectivity(priority_queue <pair<int, pair<string, string>>> &pq);
     void restore_maintenance();
     void remove_network(string source, string target);
+    void find_startofline(Station *dest, string line);
     Stations StationSet;
     stack<Network> store;
 private:

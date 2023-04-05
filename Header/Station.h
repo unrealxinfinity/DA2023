@@ -33,6 +33,7 @@ public:
     double getDist() const;
     int getBN() const;
     string getDad() const;
+    string getLine() const;
     int getAdj_cap() const;
     Network* getPath() const;
     PointerNetworks getIncoming() const;

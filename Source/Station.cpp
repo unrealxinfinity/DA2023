@@ -41,6 +41,8 @@ Network Station::addNetwork(Station* dest, int capacity,string service) {
 void Station::removeNetwork(Station *destName) {
     auto it = adj.find(destName->Name);
     auto iter = incoming.find(destName->Name);
+    adj_cap -= it->second.getcapacity();
+    destName->setAdj_cap(destName->getAdj_cap()-it->second.getcapacity());
     adj.erase(it);
     incoming.erase(iter);
     it = destName->adj.find(Name);
@@ -115,6 +117,9 @@ int Station::getAdj_cap() const {
 
 Network* Station::getPath() const {
     return this->path;
+}
+string Station::getLine() const{
+    return this->Line;
 }
 
 PointerNetworks Station::getIncoming() const {
