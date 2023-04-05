@@ -12,9 +12,11 @@ bool is_validStation(Graph graph, string name) {
 Graph LoadGraph(){
     string stationsPath,networkPath;
     cout<<"Please indicate the path for the file that contains Stations:"<<endl;
-    cin>>stationsPath;
+    cin.ignore();
+    getline(cin,stationsPath);
     cout<<"Please indicate the path for the file that contains networks:"<<endl;
-    cin>> networkPath;
+    getline(cin,networkPath);
+
     Graph g = Graph(stationsPath,networkPath);
     if(g.StationSet.empty()){
         cout<<"Graph failed to initialize, check the input paths!"<<endl;
@@ -29,6 +31,7 @@ Graph LoadGraph(){
 void MetricMenu(Graph *graph) {
     bool open = true;
     string src, target;
+    int a;
     while (open) {
         int input;
         cout << "1 -> Maximum number of trains between two stations.\n"
@@ -73,7 +76,24 @@ void MetricMenu(Graph *graph) {
                 graph->print_all_station_pairs();
                 break;
             case 3:
-                //graph->print_..;
+                cout << "Please provide what you wish to analise.\nMunicipalities?\nDistricts?\n";
+                getline(cin, src);
+                while (src!="back" && src != "districts" && src != "municipalities" && src != "Municipalities" && src != "Districts") {
+                    cout << "Please enter a valid format!\n";
+                    getline(cin, src);
+                }
+                if (src == "back") break;
+                cout << "Please provide the top amount to analise.\n";
+                getline(cin, target);
+                a = stoi(target);
+                while(a<0 && target != "back"){
+                    cout << "Please provide a valid number\n";
+                    getline(cin, target);
+                    a = stoi(target);
+                }
+                if(target == "back") break;
+                if(src == "districts" || src == "Districts")graph->print_topk_budget_districts(a);
+                else graph->print_topk_budget_municipios(a);
                 break;
             case 4:
                 cout << "Please provide the station or write back to go back.\n";
@@ -181,7 +201,7 @@ void FailuresMenu(Graph* graph) {
                 //graph->print_..;
                 break;
             case 2:
-                //graph->print_..;
+
                 break;
             default:
                 cout << "Invalid input!\n";
@@ -193,13 +213,21 @@ void FailuresMenu(Graph* graph) {
 
 int main() {
     std::string path1="../DataSet/stations.csv";
-    std::string path2="../DataSet/network.csv";d
+    std::string path2="../DataSet/network.csv";
 
     //graph.print_all_station_pairs();
     Graph graph;
     graph= Graph(path1,path2);
-    graph.valid_remove("Entroncamento", "Lisboa Oriente");
-    graph.print_topk_reduced_connectivity(5);
+    /*int a = graph.max_flow_foreachline("Lisboa Oriente");
+    cout << a << '\n';*/
+    //graph.print_topk_budget_municipios(250);
+    //graph.print_topk_budget_districts(50);
+    /*int currency = graph.max_flow_min_cost("Casa Branca", "Viana do Castelo");
+    cout << currency << '\n';*/
+    /*int a = graph.max_flow_foreachline("Linha do Norte");
+    cout << a << '\n';*/
+    /*graph.valid_remove("Entroncamento", "Lisboa Oriente");
+    graph.print_topk_reduced_connectivity(5);*/
     //graph.print_edmundsKarp("Santarém", "Lisboa Oriente");
     //graph.print_all_station_pairs();
     bool on = true;

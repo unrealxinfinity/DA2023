@@ -32,8 +32,11 @@ public:
     unsigned int getIndegree() const;
     double getDist() const;
     int getBN() const;
-    string getDad() const;
+
+    int getPi() const;
     string getLine() const;
+    string getMuni() const;
+    string getDistrict() const;
     int getAdj_cap() const;
     Network* getPath() const;
     PointerNetworks getIncoming() const;
@@ -44,7 +47,7 @@ public:
     void setIndegree(unsigned int indegree);
     void setDist(double dist);
     void setBN(int bn);
-    void setDad(string dad);
+    void setPi(int pi);
     void setAdj_cap(int adj_cap);
     void setPath(Network* path);
     Network addNetwork(Station* dest, int w, string service);
@@ -60,7 +63,7 @@ protected:
     unsigned int indegree;
     double dist = 0;
     int bottleneck = 0;
-    string dad = "";
+    int pi = 0;
     int adj_cap = 0;
     Network* path;
 

@@ -74,7 +74,79 @@ bool Graph::testandvisit(queue<string> &q, Network* network, Station *source, St
     }
     return false;
 }
-
+int Graph::bfs(string source, string target, string line){
+    for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+        iter->second.setVisited(false);
+        iter->second.setPath(nullptr);
+    }
+    queue<string> q;
+    Station* station = &StationSet[source];
+    station->setBN(INT_MAX);
+    station->setVisited(true);
+    if(source == target)return 0;
+    q.push(source);
+    bool a = false;
+    while(!q.empty() && !a){
+        string v = q.front();
+        q.pop();
+        station = &StationSet[v];
+        Station *dest;
+        for(Networks::iterator it = station->adj.begin(); it != station->adj.end(); it++){
+            int capacity = it->second.getcapacity();
+            string d = it->second.getDest();
+            dest = &StationSet[d];
+            if(dest->getLine()!=line) continue;
+            if(testandvisit(q, &it->second, station, dest, capacity - it->second.getFlow()) && (d== target)) a = true;
+        }
+        for(PointerNetworks::iterator it = station->incoming.begin(); it != station->incoming.end(); it++){
+            string o = it->first;
+            dest = &StationSet[o];
+            if(dest->getLine() != line) continue;
+            testandvisit(q, it->second, dest, station, it->second->getFlow());
+        }
+    }
+    station = &StationSet[target];
+    if(!station->isVisited()) return 0;
+    else {
+        return station->getBN();
+    }
+}
+int Graph::bfs(string source, string *target, string line){
+    for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+        iter->second.setVisited(false);
+        iter->second.setPath(nullptr);
+    }
+    queue<string> q;
+    Station* station = &StationSet[source];
+    station->setBN(INT_MAX);
+    station->setVisited(true);
+    q.push(source);
+    while(!q.empty()){
+        string v = q.front();
+        *target = q.front();
+        q.pop();
+        station = &StationSet[v];
+        Station *dest;
+        for(Networks::iterator it = station->adj.begin(); it != station->adj.end(); it++){
+            int capacity = it->second.getcapacity();
+            string d = it->second.getDest();
+            dest = &StationSet[d];
+            if(dest->getLine()!=line) continue;
+            testandvisit(q, &it->second, station, dest, capacity - it->second.getFlow());
+        }
+        for(PointerNetworks::iterator it = station->incoming.begin(); it != station->incoming.end(); it++){
+            string o = it->first;
+            dest = &StationSet[o];
+            if(dest->getLine() != line) continue;
+            testandvisit(q, it->second, dest, station, it->second->getFlow());
+        }
+    }
+    station = &StationSet[*target];
+    if(station->getName() == source) return 0;
+    else {
+        return station->getBN();
+    }
+}
 int Graph::bfs(string source, string target){
     for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
         iter->second.setVisited(false);
@@ -140,6 +212,92 @@ int Graph::edmondsKarp(string source, string target) {
     }
     return max_flow;
 }
+void Graph::edmondsKarp_noflowreset(string source, string line){
+    int flow = 0;
+    string target = "";
+    if(source == "Casa Branca"){
+        int count = 0;
+    }
+    while((flow = bfs(source, &target, line)) != 0){
+        augmentFlowAlongPath(source, target, flow);
+    }
+}
+int Graph::edmondsKarp_noflowreset_eachline(string source, string target, string line){
+    int flow = 0;
+    int max_flow = 0;
+    if(source == "Casa Branca"){
+        int count = 0;
+    }
+    while((flow = bfs(source, target, line)) != 0){
+        augmentFlowAlongPath(source, target, flow);
+        max_flow += flow;
+    }
+    return max_flow;
+}
+void Graph::topk_budget_districts(priority_queue<pair<int, string>> &pq){
+    for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+        for(Networks::iterator it = iter->second.adj.begin(); it != iter->second.adj.end(); it++){
+            it->second.setFlow(0);
+        }
+    }
+    for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+        int count = 0;
+        for(Networks::iterator it = iter->second.adj.begin(); it != iter->second.adj.end(); it++){
+            Station *dest = &StationSet[it->second.getDest()];
+            if(dest->getLine() == iter->second.getLine())count++;
+        }
+        if(count == 1) edmondsKarp_noflowreset(iter->second.getName(), iter->second.getLine());
+    }
+    unordered_map<string, int> temp;
+    for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+        for(Networks::iterator it = iter->second.adj.begin(); it != iter->second.adj.end(); it++){
+            Station *dest = &StationSet[it->second.getDest()];
+            int currency;
+            if(it->second.getservice() == "STANDARD") currency = 2;
+            else currency = 4;
+            if(temp.find(dest->getDistrict()) != temp.end()){
+                auto &a = temp[dest->getDistrict()];
+                a += it->second.getFlow() * currency;
+            }
+            else temp.insert(pair<string, int>(dest->getDistrict(), it->second.getFlow() * currency));
+        }
+    }
+    for(unordered_map<string, int>::iterator it = temp.begin(); it!=temp.end(); it++){
+        pq.push(pair<int, string>(it->second, it->first));
+    }
+}
+void Graph::topk_budget_municipios(priority_queue<pair<int, string>> &pq){
+    for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+        for(Networks::iterator it = iter->second.adj.begin(); it != iter->second.adj.end(); it++){
+            it->second.setFlow(0);
+        }
+    }
+    for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+        int count = 0;
+        for(Networks::iterator it = iter->second.adj.begin(); it != iter->second.adj.end(); it++){
+            Station *dest = &StationSet[it->second.getDest()];
+            if(dest->getLine() == iter->second.getLine())count++;
+        }
+        if(count == 1) edmondsKarp_noflowreset(iter->second.getName(), iter->second.getLine());
+    }
+    unordered_map<string, int> temp;
+    for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+        for(Networks::iterator it = iter->second.adj.begin(); it != iter->second.adj.end(); it++){
+            Station *dest = &StationSet[it->second.getDest()];
+            int currency;
+            if(it->second.getservice() == "STANDARD") currency = 2;
+            else currency = 4;
+            if(temp.find(dest->getMuni()) != temp.end()){
+                auto &a = temp[dest->getMuni()];
+                a += it->second.getFlow() * currency;
+            }
+            else temp.insert(pair<string, int>(dest->getMuni(), it->second.getFlow() * currency));
+        }
+    }
+    for(unordered_map<string, int>::iterator it = temp.begin(); it!=temp.end(); it++){
+        pq.push(pair<int, string>(it->second, it->first));
+    }
+}
 vector<pair<string, string>> Graph::stationPairs(){
     int max = 0;
     string st = "blah";
@@ -180,55 +338,119 @@ bool Graph::search(string source, string target){
     for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
         iter->second.setVisited(false);
         iter->second.setDist(INT_MAX);
+        iter->second.setPath(nullptr);
     }
     Station *station = &StationSet[source];
     station->setDist(0);
     while(source != "finish"){
         string best = "finish";
+        int b = INT_MAX;
         station->setVisited(true);
-        for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
-            if(iter->second.isVisited()) continue;
-            for(PointerNetworks::iterator it = station->incoming.begin(); it != station->incoming.end(); it++){
-                if(it->second->getFlow() != 0){
-                    int value = station->getDist() + station->getIndegree();
-                }
-            }
-            for(Networks::iterator it = station->adj.begin(); it != station->adj.end(); it++){
+        for(Networks::iterator it = station->adj.begin(); it != station->adj.end(); it++){
                 Station *dest = &StationSet[it->second.getDest()];
-                if(it->second.getFlow() != 0){
-                    int currency;
-                    if(it->second.getservice() == "STANDARD") currency = 2;
-                    else currency = 4;
-                    int value = station->getDist() + station->getIndegree() - dest->getIndegree() - currency;
+                if(dest->isVisited())continue;
+                int currency = 0;
+                if(it->second.getservice() == "STANDARD") currency = 2;
+                else currency = 4;
+                int value = station->getDist() + station->getPi() - dest->getPi() + currency;
+                if(it->second.getFlow() != 0 || (it->second.getFlow() < it->second.getcapacity())){
                     if(dest->getDist() > value){
                         dest->setDist(value);
-                        dest->setDad(source);
+                        dest->setPath(&it->second);
                     }
                 }
+                if(dest->getDist() < b){
+                    b = dest->getDist();
+                    best = dest->getName();
+                }
             }
-        }
+        source = best;
+        station = &StationSet[source];
     }
-}
-void Graph::max_flow_min_cost(string source, string target){
     for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+        station = &iter->second;
+        int z = station->getPi() + station->getDist();
+        station->setPi(min(z, INT_MAX));
+    }
+    station = &StationSet[target];
+    return station->isVisited();
+}
+int Graph::max_flow_min_cost(string source, string target){
+    for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+        iter->second.setPi(0);
         for(Networks::iterator it = iter->second.adj.begin(); it != iter->second.adj.end(); it++){
             it->second.setFlow(0);
         }
     }
     int total_flow = 0;
     int total_cost = 0;
+    Station *station;
     while(search(source, target)){
-
+        int bottleneck = INT_MAX;
+        station = &StationSet[target];
+        while(station->getPath() != nullptr){
+            if(station->getPath()->getFlow()!= 0){
+                bottleneck = min(bottleneck, station->getPath()->getFlow());
+            }
+            else{
+                bottleneck = min(bottleneck, station->getPath()->getcapacity()-station->getPath()->getFlow());
+            }
+            station = &StationSet[station->getPath()->getOrig()];
+        }
+        station = &StationSet[target];
+        while(station->getPath() != nullptr){
+            int currency = 0;
+            if(station->getPath()->getservice() == "STANDARD") currency = 2;
+            else currency = 4;
+            if(station->getPath()->getFlow() != 0){
+                station->getPath()->setFlow(station->getPath()->getFlow()-bottleneck);
+                total_cost += bottleneck*currency;
+            }
+            else{
+                station->getPath()->setFlow(station->getPath()->getFlow()+bottleneck);
+                total_cost += bottleneck * currency;
+            }
+        }
+        total_flow += bottleneck;
     }
+    return total_cost;
 
+}
+int Graph::max_flow_foreachline(string target){
+    Station *station = &StationSet[target];
+    unordered_set<string> lines;
+    int max_flow = 0;
+    for(Networks::iterator it = station->adj.begin(); it != station->adj.end(); it++){
+            Station *dest = &StationSet[it->second.getDest()];
+            it->second.setFlow(0);
+            lines.insert(dest->getLine());
+    }
+    for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+        int count = 0;
+        if(iter->second.getName() == target)continue;
+        for(Networks::iterator it = iter->second.adj.begin(); it != iter->second.adj.end(); it++){
+            Station *dest = &StationSet[it->second.getDest()];
+            if((dest->getLine() == iter->second.getLine()) && (lines.find(iter->second.getLine()) != lines.end()))count++;
+        }
+        if(count == 1) max_flow += edmondsKarp_noflowreset_eachline(iter->second.getName(), target, iter->second.getLine());
+    }
+    return max_flow;
+}
+int Graph::find(){
+    int res = 0;
+    for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+        if(iter->second.getName() == "Santarém")res++;
+    }
+    return res;
 }
 void Graph::topk_reduced_connectivity(priority_queue <pair<int, pair<string, string>>> &pq) {
     stack<Network> temp = store;
+
     for (Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++) {
         Station &station = iter->second;
         for (Stations::iterator it = iter; it != StationSet.end(); it++) {
             Station &s = it->second;
-            if (s.getName() != station.getName()) {
+            if (s.getName() != station.getName()&& !station.isVisited()) {
                 int max_flow_before_remove = edmondsKarp(station.getName(), s.getName());
                 while(!temp.empty()){
                     remove_network(temp.top().getOrig(), temp.top().getDest());
@@ -248,6 +470,29 @@ void Graph::topk_reduced_connectivity(priority_queue <pair<int, pair<string, str
 void Graph::print_reduced_connectivity(string source, string target){
     cout << "With the reduced connectivity:\n";
     print_edmundsKarp(source, target);
+}
+void Graph::print_topk_budget_municipios(int k){
+    priority_queue <pair<int, string>> pq;
+    topk_budget_municipios(pq);
+    if(k > pq.size())k=pq.size();
+    cout << "The top " << k << " municipios which require more budget are:\n";
+    while(k>0){
+        cout << pq.top().second << " " << pq.top().first << "$\n";
+        pq.pop();
+        k--;
+    }
+}
+
+void Graph::print_topk_budget_districts(int k){
+    priority_queue <pair<int, string>> pq;
+    topk_budget_districts(pq);
+    if(k > pq.size())k=pq.size();
+    cout << "The top " << k << " districts which require more budget are:\n";
+    while(k>0){
+        cout << pq.top().second << " " << pq.top().first << "$\n";
+        pq.pop();
+        k--;
+    }
 }
 void Graph::print_topk_reduced_connectivity(int k){
     cout << "The top " << k << " stations who suffered the most out of the maintenance were:\n";
@@ -302,10 +547,10 @@ void Graph::find_startofline(Station *dest, string line){
     queue<string> q;
     for(Networks::iterator it = dest->adj.begin(); it != dest->adj.end(); it++){
         Station *station = &StationSet[it->second.getDest()];
-        if(station->getLine() == line)
+        if(station->getLine() == line);
     }
 }
-void Graph::max_flow_from_lines(string target){
+/*void Graph::max_flow_from_lines(string target){
     Station *dest = &StationSet[target];
     stack<string> temp;
     for(Networks::iterator it = dest->adj.begin(); it != dest->adj.end(); it++){
@@ -316,7 +561,7 @@ void Graph::max_flow_from_lines(string target){
         find_startofline(dest, temp.top());
         temp.pop();
     }
-}
+}*/
 void Graph::insertStations() {
     ifstream fout(station_file);
 

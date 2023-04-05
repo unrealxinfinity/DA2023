@@ -1,7 +1,7 @@
 Name,District,Municipality,Township,Line
-Casa Branca,ÉVORA,MONTEMOR-O-NOVO,Santiago do Escoural,Linha do Alentejo
-Monte das Flores,ÉVORA,ÉVORA,Malagueira e Horta das Figueiras,Linha de Évora
-Porto Campanhã,PORTO,PORTO,Porto,Linha do Norte
-Viana do Castelo,VIANA DO CASTELO,VIANA DO CASTELO,Viana do Castelo,Linha do Minho
-Ermidas-Sado,SETÚBAL,SANTIAGO DO CACÉM,Ermidas-Sado,Linha do Sul
-Faro,FARO,FARO,Faro,Linha do Algarve
+Casa Branca,ÉVORA,ÉVORA,Santiago do Escoural,Linha do Norte
+Monte das Flores,ÉVORA,ÉVORA,Malagueira e Horta das Figueiras,Linha do Norte
+Porto Campanhã,PORTO,ÉVORA,Porto,Linha do Norte
+Viana do Castelo,VIANA DO CASTELO,ÉVORA,Viana do Castelo,Linha do Norte
+Ermidas-Sado,SETÚBAL,ÉVORA,Ermidas-Sado,Linha do Norte
+Faro,FARO,FARO,ÉVORA,Linha do Norte
