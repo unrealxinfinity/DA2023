@@ -41,9 +41,11 @@ Network Station::addNetwork(Station* dest, int capacity,string service) {
 void Station::removeNetwork(Station *destName) {
     auto it = adj.find(destName->Name);
     auto iter = incoming.find(destName->Name);
+    adj_cap -= it->second.getcapacity();
     adj.erase(it);
     incoming.erase(iter);
     it = destName->adj.find(Name);
+    destName->setAdj_cap(destName->getAdj_cap()-it->second.getcapacity());
     iter = destName->incoming.find(Name);
     destName->adj.erase(it);
     destName->incoming.erase(iter);
@@ -106,8 +108,8 @@ double Station::getDist() const {
 int Station::getBN() const {
     return this->bottleneck;
 }
-string Station::getDad() const {
-    return this->dad;
+int Station::getPi() const {
+    return this->pi;
 }
 int Station::getAdj_cap() const {
     return this->adj_cap;
@@ -115,6 +117,15 @@ int Station::getAdj_cap() const {
 
 Network* Station::getPath() const {
     return this->path;
+}
+string Station::getLine() const{
+    return this->Line;
+}
+string Station::getMuni() const{
+    return this->Municipality;
+}
+string Station::getDistrict() const{
+    return this->District;
 }
 
 PointerNetworks Station::getIncoming() const {
@@ -143,8 +154,8 @@ void Station::setDist(double dist) {
 void Station::setBN(int bn) {
     this->bottleneck = bn;
 }
-void Station::setDad(string dad) {
-    this->dad = dad;
+void Station::setPi(int pi) {
+    this->pi = pi;
 }
 void Station::setAdj_cap(int adj_cap) {
     this->adj_cap = adj_cap;

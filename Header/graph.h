@@ -42,16 +42,26 @@ public:
     void print_all_station_pairs();
     void print_reduced_connectivity(string source, string target);
     void print_topk_reduced_connectivity(int k);
+    void print_topk_budget_municipios(int k);
+    void print_topk_budget_districts(int k);
 
     void duvidaprostor(string target);
+    int find();
 
     int bfs(string source, string target);
+    int bfs(string source, string target, string line);
+    int bfs(string source, string *target, string line);
     void augmentFlowAlongPath(string source, string target, int bottleneck);
     bool testandvisit(queue<string> &q, Network * network, Station *source, Station *target, int flow);
     int edmondsKarp(string source, string target);
+    void edmondsKarp_noflowreset(string source, string line);
+    int edmondsKarp_noflowreset_eachline(string source, string target, string line);
     bool valid_remove(string source, string target);
     vector<pair<string, string>> stationPairs();
-    void max_flow_min_cost(string source, string target);
+    void topk_budget_municipios(priority_queue<pair<int, string>> &pq);
+    void topk_budget_districts(priority_queue<pair<int, string>> &pq);
+    int max_flow_foreachline(string target);
+    int max_flow_min_cost(string source, string target);
     bool search(string source, string target);
     void topk_reduced_connectivity(priority_queue <pair<int, pair<string, string>>> &pq);
     void restore_maintenance();
