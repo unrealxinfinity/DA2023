@@ -70,7 +70,7 @@ bool Graph::testandvisit(queue<string> &queue, Network* network, Station *source
 }
 
 
-void Graph::augmentFlowAlongPath(string source, string target, int bottleneck){
+void Graph::augmentFlowAlongPath(string source, string target, int bottleneck, vector<queue<string>> *path){
     Station *station = &StationSet[target];
     Network *network = station->getPath();
     unsigned int currency = 0;
@@ -91,6 +91,8 @@ void Graph::augmentFlowAlongPath(string source, string target, int bottleneck){
             network = station->getPath();
         }
     }
+    station = &StationSet[target];
+    station->setIndegree(station->getIndegree() + currency);
 }
 
 
@@ -123,19 +125,21 @@ void Graph::remove_network(string source, string target){
 
 //EXERCISE 2.1 AND AUXILIARY FUNCTION
 void Graph::print_edmundsKarp(string source, string target){
-    int flow = edmondsKarp(source, target);
+    vector<queue<string>> path;
+    int flow = edmondsKarp(source, target, &path);
     cout << "The maximum flow between " << source << " and " << target << " is " << flow << '\n';
 }
-int Graph::edmondsKarp(string source, string target) {
+int Graph::edmondsKarp(string source, string target, vector<queue<string>> *path) {
     int max_flow = 0;
     int flow = 0;
     for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+        iter->second.setIndegree(0);
         for(Networks::iterator it = iter->second.adj.begin(); it != iter->second.adj.end(); it++){
             it->second.setFlow(0);
         }
     }
     while((flow = bfs(source, target)) != 0){
-        augmentFlowAlongPath(source, target, flow);
+        augmentFlowAlongPath(source, target, flow, path);
         max_flow += flow;
     }
     return max_flow;
@@ -206,14 +210,15 @@ vector<pair<string, string>> Graph::stationPairs(){
             sub_max = station.getAdj_cap();
         }
     }
-    max = edmondsKarp(st, second_st);
+    vector<queue<string>> path;
+    max = edmondsKarp(st, second_st, &path);
     vector<pair<string, string>> final;
     for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++) {
         Station &station = iter->second;
         for(Stations::iterator it = iter; it != StationSet.end(); it++){
             Station &s = it->second;
             if((min(station.getAdj_cap(), s.getAdj_cap()) > max) && (s.getName() != station.getName())){
-                int flow = edmondsKarp(station.getName(), s.getName());
+                int flow = edmondsKarp(station.getName(), s.getName(), &path);
                 if(flow >= max){
                     if(flow > max) final.clear();
                     max = flow;
@@ -320,11 +325,9 @@ void Graph::topk_budget_municipios(priority_queue<pair<int, string>> &pq){
 void Graph::edmondsKarp_noflowreset(string source, string line){
     int flow = 0;
     string target = "";
-    if(source == "Casa Branca"){
-        int count = 0;
-    }
+    vector<queue<string>> path;
     while((flow = bfs(source, &target, line)) != 0){
-        augmentFlowAlongPath(source, target, flow);
+        augmentFlowAlongPath(source, target, flow, &path);
     }
 }
 int Graph::bfs(string source, string *target, string line){
@@ -369,8 +372,8 @@ int Graph::bfs(string source, string *target, string line){
 //EXERCISE 2.4
 void Graph::print_max_flow_foreachline(string target){
     cout << "The Maximum number of trains that can simultaneously arrive at a given station are: ";
-    max_flow_foreachline(target);
-    cout << '\n';
+    int max_flow = max_flow_foreachline(target);
+    cout << max_flow << '\n';
 }
 int Graph::max_flow_foreachline(string target){
     Station *station = &StationSet[target];
@@ -395,8 +398,9 @@ int Graph::max_flow_foreachline(string target){
 int Graph::edmondsKarp_noflowreset_eachline(string source, string target, string line){
     int flow = 0;
     int max_flow = 0;
+    vector<queue<string>> path;
     while((flow = bfs(source, target, line)) != 0){
-        augmentFlowAlongPath(source, target, flow);
+        augmentFlowAlongPath(source, target, flow, &path);
         max_flow += flow;
     }
     return max_flow;
@@ -441,16 +445,22 @@ int Graph::bfs(string source, string target, string line){
 
 
 //EXERCISE 3.1
-int Graph::max_flow_min_cost(string source, string target){
-    edmondsKarp(source, target);
-    while(search(source, target)){
-
-    }
-    return 0;
-
+void Graph::print_max_flow_min_cost(string source, string target){
+    Station *station = &StationSet[target];
+    vector<queue<string>> path;
+    int max_flow = edmondsKarp(source, target, &path);
+    cout << "The maximum flow between " << source << " and " << target << " is " << max_flow << " and a random cost is " << station->getIndegree() << "$\n";
+    max_flow_min_cost(source, target, &path);
+    cout << "The maximum flow with minimum cost between " << source << " and " << target << " is " << max_flow << " and it has cost " << station->getIndegree() << "$\n";
 }
-bool Graph::search(string source, string target){
-    for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+void Graph::max_flow_min_cost(string source, string target, vector<queue<string>> *path) {
+    edmondsKarp(source, target, path);
+    while (search(source, target)) {
+        int count = 0;
+    }
+}
+bool Graph::search(string source, string target) {
+    for (Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++) {
         iter->second.setVisited(false);
         iter->second.setDist(INT_MAX);
         iter->second.setPath(nullptr);
@@ -459,27 +469,43 @@ bool Graph::search(string source, string target){
     Station *destiny = &StationSet[target];
     Station *station = &StationSet[target];
     station->setDist(0);
-    for(int i = 0; i <= StationSet.size(); i++){
-        for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
+    for (int i = 0; i <= StationSet.size(); i++) {
+        if (i == StationSet.size()) {
+            int count = 0;
+        }
+        for (Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++) {
             Station *dest;
             station = &iter->second;
             int currency = 0;
-            for(PointerNetworks::iterator it = station->incoming.begin(); it != station->incoming.end(); it++){
+            for (PointerNetworks::iterator it = station->incoming.begin(); it != station->incoming.end(); it++) {
                 dest = &StationSet[it->first];
-                Network network = dest->adj.find(station->getName())->second;
-                if(network.getservice() == "STANDARD") currency = 2;
+                Network *network = &dest->adj[station->getName()];
+                if (network->getservice() == "STANDARD") currency = 2;
                 else currency = 4;
-                if(test_and_visit_search(&network, station, dest, currency *network.getFlow(), station->getDist() - (currency*network.getFlow())) && (i == StationSet.size())){
-                    destiny->setIndegree(destiny->getIndegree()+ find_better_path(dest));
+                int flow;
+                if (network->getFlow() != 0)flow = currency;
+                else flow = 0;
+                int dist = station->getDist() - flow;
+                if (station->getDist() == INT_MAX) dist = INT_MAX;
+                if (test_and_visit_search(network, station, dest, flow, dist) && (i == StationSet.size())) {
+                    destiny->setIndegree(destiny->getIndegree() + find_better_path(dest));
                     return true;
                 }
             }
-            for(Networks::iterator it = station->adj.begin(); it != station->adj.end(); it++){
+            for (Networks::iterator it = station->adj.begin(); it != station->adj.end(); it++) {
                 dest = &StationSet[it->second.getDest()];
-                if(it->second.getservice() == "STANDARD") currency = 2;
+                if (it->second.getservice() == "STANDARD") currency = 2;
                 else currency = 4;
-                if(test_and_visit_search(&it->second, station, dest, (currency * (it->second.getcapacity()-it->second.getFlow())), station->getDist()+(currency * (it->second.getcapacity()-it->second.getFlow())) && (i == StationSet.size())) && (i == StationSet.size())){
-                    destiny->setIndegree(destiny->getIndegree()+ find_better_path(dest));
+                if (station->getName() == "Monte das Flores") {
+                    int c = 0;
+                }
+                int flow;
+                if (it->second.getcapacity() - it->second.getFlow() > 0) flow = currency;
+                else flow = 0;
+                int dist = station->getDist() + flow;
+                if (station->getDist() == INT_MAX) dist = INT_MAX;
+                if (test_and_visit_search(&it->second, station, dest, flow, dist) && (i == StationSet.size())) {
+                    destiny->setIndegree(destiny->getIndegree() + find_better_path(dest));
                     return true;
                 }
             }
@@ -489,9 +515,6 @@ bool Graph::search(string source, string target){
 }
 bool Graph::test_and_visit_search(Network *network, Station *source, Station *target, int flow, int dist){
     if(flow > 0){
-        if(network->getOrig() == "Porto Campanhã" && network->getDest() == "Monte das Flores"){
-            int count = 0;
-        }
         if(target->getDist() > dist){
             target->setDist(dist);
             target->setPath(network);
@@ -500,6 +523,7 @@ bool Graph::test_and_visit_search(Network *network, Station *source, Station *ta
     }
     return false;
 }
+
 int Graph::find_better_path(Station *station){
     Network *network = station->getPath();
     int bottleneck = INT_MAX;
@@ -557,6 +581,7 @@ int Graph::find_better_path(Station *station){
 
 
 
+
 //EXERCISE 4.1
 void Graph::print_reduced_connectivity(string source, string target){
     cout << "With the reduced connectivity:\n";
@@ -570,26 +595,30 @@ void Graph::print_reduced_connectivity(string source, string target){
 void Graph::print_topk_reduced_connectivity(int k){
     cout << "The top " << k << " stations who suffered the most out of the maintenance were:\n";
     priority_queue <pair<int, pair<string, string>>> pq;
-    topk_reduced_connectivity(pq);
+    vector<queue<string>> path;
+    topk_reduced_connectivity(pq, &path);
     while(k > 0){
         cout << pq.top().second.first << " <-> " << pq.top().second.second << " (" << pq.top().first << ")\n";
         pq.pop();
         k--;
     }
 }
-void Graph::topk_reduced_connectivity(priority_queue <pair<int, pair<string, string>>> &pq) {
+void Graph::topk_reduced_connectivity(priority_queue <pair<int, pair<string, string>>> &pq, vector<queue<string>> *path) {
     stack<Network> temp = store;
+    Station *check = &StationSet[temp.top().getDest()];
+    Network network = check->adj[temp.top().getOrig()];
     for (Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++) {
         Station &station = iter->second;
         for (Stations::iterator it = iter; it != StationSet.end(); it++) {
             Station &s = it->second;
             if (s.getName() != station.getName()) {
-                int max_flow_before_remove = edmondsKarp(station.getName(), s.getName());
+                int max_flow_before_remove = edmondsKarp(station.getName(), s.getName(), path);
+                if((temp.top().getFlow() <= 0) || network.getFlow() <= 0) continue;
                 while (!temp.empty()) {
                     remove_network(temp.top().getOrig(), temp.top().getDest());
                     temp.pop();
                 }
-                int max_flow_after_remove = edmondsKarp(station.getName(), s.getName());
+                int max_flow_after_remove = edmondsKarp(station.getName(), s.getName(), path);
                 int dif = max_flow_before_remove - max_flow_after_remove;
                 pq.push(pair<int, pair<string, string>>(dif, pair<string, string>(station.getName(), s.getName())));
                 temp = store;

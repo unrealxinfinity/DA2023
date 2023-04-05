@@ -126,7 +126,7 @@ void OptimizationMenu(Graph* graph) {
         getline(cin, target);
     }
     if (target == "back") return;
-    //graph->print_..;
+    graph->print_max_flow_min_cost(src, target);
 }
 void FailuresMenu(Graph* graph) {
     bool open = true;

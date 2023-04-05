@@ -64,6 +64,7 @@ public:
     void print_topk_budget_municipios(int k);
     void print_topk_budget_districts(int k);
     void print_max_flow_foreachline(string target);
+    void print_max_flow_min_cost(string source, string target);
     /**
      * Auxiliary method to edmondsKarp(). <br>
      * Does a breath first search through the railway network #StationSet starting on \p source station.
@@ -106,7 +107,7 @@ public:
      * @param bottleneck
      * @note Time Complexity O(1).
      */
-    void augmentFlowAlongPath(string source, string target, int bottleneck);
+    void augmentFlowAlongPath(string source, string target, int bottleneck, vector<queue<string>> *path);
     /**
      * Auxiliary method to bfs(string source, string target), bfs(string source, string target, string line) and bfs(string source, string *target, string line). <br>
      * Sets the visited, path and bottleneck of \p target and pushes it to the given \p queue, only if it hasen't been visited and the \p flow is higher than zero.
@@ -120,7 +121,7 @@ public:
      */
     bool testandvisit(queue<string> &queue, Network * network, Station *source, Station *target, int flow);
     bool test_and_visit_search(Network *network, Station *source, Station *target, int flow, int dist);
-    int edmondsKarp(string source, string target);
+    int edmondsKarp(string source, string target, vector<queue<string>> *path);
     void edmondsKarp_noflowreset(string source, string line);
     int edmondsKarp_noflowreset_eachline(string source, string target, string line);
     /**
@@ -136,10 +137,10 @@ public:
     void topk_budget_municipios(priority_queue<pair<int, string>> &pq);
     void topk_budget_districts(priority_queue<pair<int, string>> &pq);
     int max_flow_foreachline(string target);
-    int max_flow_min_cost(string source, string target);
+    void max_flow_min_cost(string source, string target, vector<queue<string>> *path);
     bool search(string source, string target);
     int find_better_path(Station *station);
-    void topk_reduced_connectivity(priority_queue <pair<int, pair<string, string>>> &pq);
+    void topk_reduced_connectivity(priority_queue <pair<int, pair<string, string>>> &pq, vector<queue<string>>* path);
     /**
      * Auxiliary method to topk_reduced_connectivity(). <br>
      * Restores the railway network to it's original state, before networks were removed due to maintenance. <br>
