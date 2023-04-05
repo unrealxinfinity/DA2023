@@ -17,13 +17,6 @@ Station::Station(string Name, string District, string Municipality, string Towns
     this->Line="";
 }
 
-
-/*
- * Auxiliary function to add an outgoing Network to a Station (this),
- * with a given destination Station (d) and Network capacity (w).
- */
-
-
 Network Station::addNetwork(Station* dest, int capacity,string service) {
     Network newNetwork = Network(this->getName() , dest->getName(), capacity , service);
     adj.insert(pair<string,Network>(newNetwork.getDest(),newNetwork));
@@ -32,11 +25,6 @@ Network Station::addNetwork(Station* dest, int capacity,string service) {
     return newNetwork;
 }
 
-/*
- * Auxiliary function to remove an outgoing Network (with a given destination (d))
- * from a Station (this).
- * Returns true if successful, and false if such Network does not exist.
- */
 
 void Station::removeNetwork(Station *destName) {
     auto it = adj.find(destName->Name);

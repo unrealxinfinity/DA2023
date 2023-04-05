@@ -23,8 +23,9 @@ public:
     Station();
     Station(string name, string District, string Municipality, string Township, string Line);
     Station(string name);
-    bool operator<(const Station & Station) const; // // required by riorityQueue
+    bool operator<(const Station & Station) const; // required by priorityQueue
     bool operator==(const Station &other ) const;
+
     string getName() const;
     //Networks getAdj()const;
     bool isVisited() const;
@@ -49,10 +50,23 @@ public:
     void setPi(int pi);
     void setAdj_cap(int adj_cap);
     void setPath(Network* path);
+    /**
+     * Auxiliary method to Graph::addBidirectionalNetwork(). <br>
+     * Adds a new network to the Station's #adj and to the #incoming of the aforementioned network's sink.
+     * @param dest Network's sink.
+     * @param w Weight of the network.
+     * @param service Type of service provided by the network (Standard or Alpha).
+     * @return Newly created network.
+     * @note Time Complexity O(1).
+     */
     Network addNetwork(Station* dest, int w, string service);
-    void removeNetwork(Station * destName);
-
-    //friend class riorityQueue<Station>;
+    /**
+     * Auxiliary method to Graph::remove_network(). <br>
+     * Removes the network connecting this Station to the Station \p destName from the #adj and #incloming of both Stations.
+     * @param destName Destination(sink) of the network to be removed.
+     * @note Time Complexity O(1).
+     */
+    void removeNetwork(Station *destName);
 
 protected:
     string Name, District, Municipality, Township, Line;
@@ -66,18 +80,9 @@ protected:
     int adj_cap = 0;
     Network* path;
 
-
-
-    int queueIndex = 0;
 public:
-    PointerNetworks incoming;
-    Networks adj;
-};
-
-struct StationHash{
-    size_t operator()(const Station &other) const{
-        return hash<std::string>()(other.getName());
-    }
+    PointerNetworks incoming; /**< Unordered map of all Networks comming into this Station (value), indexed by the networks's source name(key). See also #PointerNetworks. */
+    Networks adj; /**< Unordered map of all Networks comming out of this Station (value), indexed by the networks's sink name(key). See also #Networks. */
 };
 
 #endif //UNTITLED4_STATION_H

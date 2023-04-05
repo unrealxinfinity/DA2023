@@ -20,6 +20,8 @@ public:
     Network();
     Network(string orig, string dest, int w, string service);
     Network(string dest);
+    bool operator==(const Network &other ) const;
+
     string getDest() const;
     int getcapacity() const;
     string getservice() const;
@@ -28,7 +30,7 @@ public:
     Network* getReverse() const;
     int getFlow() const;
     int getCurrencycap() const;
-    bool operator==(const Network &other ) const;
+
     void setSelected(bool selected);
     void setReverse(Network *reverse) ;
     void setFlow(int flow);
@@ -50,10 +52,5 @@ protected:
 
     int flow = 0; // for flow-related problems
 };
-/*struct NetworkHash{
-    size_t operator()(const string &other) const{
-        return hash<std::string>()(other);
-    }
-};*/
 
 #endif //UNTITLED4_NETWORK_H

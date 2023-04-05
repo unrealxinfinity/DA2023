@@ -6,7 +6,6 @@ using namespace std;
 bool is_validStation(Graph graph, string name) {
     name = graph.find_code(name);
     if(name == "error") return false;
-    //if (graph.getStationSet().find(name)!=graph.getStationSet().end()) return true;
     return true;
 }
 Graph LoadGraph(){
@@ -101,7 +100,7 @@ void MetricMenu(Graph *graph) {
                     getline(cin, target);
                 }
                 if (target == "back") break;
-                //graph->print_..;
+                graph->print_max_flow_foreachline(target);
                 break;
             default:
                 cout << "Invalid input!\n";
@@ -110,6 +109,8 @@ void MetricMenu(Graph *graph) {
     }
 }
 void OptimizationMenu(Graph* graph) {
+    cin.clear();
+    cin.ignore(INT_MAX, '\n');
     string src, target;
     cout << "Please provide the source station or write back to go back.\n";
     getline(cin, src);
@@ -129,7 +130,7 @@ void OptimizationMenu(Graph* graph) {
 }
 void FailuresMenu(Graph* graph) {
     bool open = true;
-    string src, target, network_src, network_dest, final;
+    string src, target, network_src, network_dest, final, k;
     while (open) {
         int input;
         cout << "1 -> Maximum number of trains between two stations in a network of reduced connectivity.\n"
@@ -195,10 +196,16 @@ void FailuresMenu(Graph* graph) {
                 if(final == "back" || network_dest == "back" || network_src == "back") break;
                 graph->print_reduced_connectivity(src, target);
                 graph->restore_maintenance();
-                //graph->print_..;
                 break;
             case 2:
-                //graph->print_..;
+                cout << "Please provide the number of stations you wish to see or write back to go back\n";
+                getline(cin, k);
+                while (k!="back") {
+                    cout << "Please enter a valid number!\n";
+                    getline(cin, k);
+                }
+                if (k == "back") break;
+                graph->print_topk_reduced_connectivity(stoi(k));
                 break;
             default:
                 cout << "Invalid input!\n";
@@ -223,8 +230,8 @@ int main() {
     cout << currency << '\n';*/
     /*int a = graph.max_flow_foreachline("Linha do Norte");
     cout << a << '\n';*/
-    /*graph.valid_remove("Entroncamento", "Lisboa Oriente");
-    graph.print_topk_reduced_connectivity(5);*/
+    /*graph.valid_remove("Entroncamento", "Lisboa Oriente");*/
+    //graph.print_topk_reduced_connectivity(5);
     //graph.print_edmundsKarp("Santarém", "Lisboa Oriente");
     //graph.print_all_station_pairs();
     bool on = true;
