@@ -8,6 +8,11 @@ bool is_validStation(Graph graph, string name) {
     if(name == "error") return false;
     return true;
 }
+/**Initializes the graph with data
+ *
+ * @return Graph
+ * @note Time complexity: O(V+E)
+ */
 Graph LoadGraph(){
     string stationsPath,networkPath;
     cout<<"Please indicate the path for the file that contains Stations:"<<endl;
