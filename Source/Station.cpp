@@ -96,16 +96,10 @@ double Station::getDist() const {
 int Station::getBN() const {
     return this->bottleneck;
 }
-int Station::getPi() const {
-    return this->pi;
-}
 int Station::getAdj_cap() const {
     return this->adj_cap;
 }
 
-Network* Station::getPath() const {
-    return this->path;
-}
 string Station::getLine() const{
     return this->Line;
 }
@@ -119,6 +113,9 @@ string Station::getDistrict() const{
 
 PointerNetworks Station::getIncoming() const {
     return this->incoming;
+}
+Network* Station::getPath() const{
+    return this->path;
 }
 
 void Station::setName(string Name) {
@@ -143,14 +140,11 @@ void Station::setDist(double dist) {
 void Station::setBN(int bn) {
     this->bottleneck = bn;
 }
-void Station::setPi(int pi) {
-    this->pi = pi;
-}
 void Station::setAdj_cap(int adj_cap) {
     this->adj_cap = adj_cap;
 }
-
-void Station::setPath(Network* path) {
-    this->path = path;
+void Station::setPath(Network*network) {
+    this->path = network;
 }
+
 
