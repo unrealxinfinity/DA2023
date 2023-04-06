@@ -15,12 +15,7 @@ Graph::Graph(const string sf, const string nf) {
     this->insertNetworks();
 }
 
-/**
-    * Checks if a station exists (in the set of stations - #StationSet) given it's name.
-    * @param name
-    * @return Parameter \p name if station was found and string 'error' otherwise.
-    * @note Time Complexity O(1).
-    */
+
 string Graph::find_code(string name) {
     if(StationSet.find(name) != StationSet.end()){
         return name;
@@ -45,14 +40,7 @@ bool Graph::addStation(string name) {
     return true;
 }*/
 
-/**
-     * Assigns a new network to both the source and sink stations of the aforementioned network.
-     * @param src Network's source station.
-     * @param dest Network's sink station.
-     * @param w Weight of the network.
-     * @param service Type of service provided by the network (Standard or Alpha).
-     * @note Time Complexity O(1).
-     */
+
 void Graph::addBidirectionalNetwork(string src, string dest, int w,string service) {
     Station& source_it = StationSet[src];
     Station& destination_it = StationSet[dest];
@@ -83,17 +71,7 @@ bool Graph::testandvisit(queue<string> &queue, Network* network, Station *source
     return false;
 }
 
-/**
-     * Auxiliary method to edmondsKarp(), edmondsKarp_noflowreset_eachline(), edmondsKarp_noflowreset(). <br>
-     * Starting on the \p target station, passes flow through the network backwards path, which is made up of each station's #Station::path, keeping in mind the given \p bottleneck. <br>
-     * This method does not assume the responsibility of previously setting the path, as it takes for granted it is already set.
-     * TODO (permision to remove argument source)
-     * @param string source
-     * @param string target
-     * @param int bottleneck
-     * @param vector of queues of station names-> path
-     * @note Time Complexity O(P) being p the number of edges of a certain augmenting path.
-     */
+
 void Graph::augmentFlowAlongPath(string source, string target, int bottleneck, vector<queue<string>> *path){
     Station *station = &StationSet[target];
     Network *network = station->getPath();
@@ -146,11 +124,7 @@ void Graph::remove_network(string source, string target){
 }
 
 
-/**
- * Prints the maximum flow that a source can pump into a target node
- * @param string source
- * @param string target
- */
+
 //EXERCISE 2.1 AND AUXILIARY FUNCTION
 void Graph::print_edmondsKarp(string source, string target){
     vector<queue<string>> path;
@@ -158,14 +132,7 @@ void Graph::print_edmondsKarp(string source, string target){
     cout << "The maximum flow between " << source << " and " << target << " is " << flow << '\n';
 }
 
-    /**
-     * Algorithm that uses bfs to calculate shortest augmenting paths, in order to calculate maximum flow
-     * @param string source
-     * @param string target
-     * @param vector of queues of station names -> path
-     * @return maximum flow of the graph considering source and target
-     * @note Time complexity O(VE)
-     */
+
 int Graph::edmondsKarp(string source, string target, vector<queue<string>> *path) {
     int max_flow = 0;
     int flow = 0;
@@ -181,15 +148,7 @@ int Graph::edmondsKarp(string source, string target, vector<queue<string>> *path
     }
     return max_flow;
 }
-    /**
-     * Auxiliary method to edmondsKarp(). <br>
-     * Does a breath first search through the railway network #StationSet starting on \p source station.
-     * @see testandvisit()
-     * @param string source
-     * @param string target
-     * @return \p target station's bottleneck if the BFS reached it and 0 otherwise.
-     * @note Time Complexity O(V+E) (vertixes + edges) <- V+E+(I=E) = V + 2E
-     */
+
 int Graph::bfs(string source, string target){
     for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
         iter->second.setVisited(false);
@@ -684,11 +643,6 @@ void Graph::topk_reduced_connectivity(priority_queue <pair<int, pair<string, str
 
 
 //GRAPH CREATION
-    /**
-     * Extracts all relevant information from file #station_file which is saved to #StationSet.
-     * @param filename
-     * @note Time Complexity O(V).
-     */
 void Graph::insertStations() {
     ifstream fout(station_file);
 
@@ -709,11 +663,6 @@ void Graph::insertStations() {
 
 }
 
-/**
-    * Extracts all relevant information from file #network_file which is saved to the stations of #StationSet.
-    * @param filename
-    * @note Time Complexity O(E).
-    */
 void Graph::insertNetworks() {
     ifstream fout(network_file);
     string temp, source, target, capacity, service;

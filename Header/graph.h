@@ -62,10 +62,10 @@ public:
      * Prints the maximum flow that a source can pump into a target node
      * @param string source
      * @param string target
-     * @note Time complexity O(
+     * @note Time complexity O(V*E²)
      */
     void print_edmondsKarp(string source, string target);
-
+    //complexity
     void print_all_station_pairs();
 
     void print_reduced_connectivity(string source, string target);
@@ -142,7 +142,7 @@ public:
      * @param string target
      * @param  path
      * @return maximum flow of the graph considering source and target
-     * @note Time Complexity O(V*E^2)
+     * @note Time Complexity O(V*E²)
      */
     int edmondsKarp(string source, string target, vector<queue<string>> *path);
     /**
@@ -150,7 +150,7 @@ public:
     * @param string source
     * @param string target
     * @param  path
-    * @note Time Complexity O(V*E^2)
+    * @note Time Complexity O(V*E²)
     */
     void edmondsKarp_noflowreset(string source, string line);
 
@@ -198,7 +198,7 @@ public:
 
     Stations StationSet; /**< Unordered map of all station names(key) and respective instance of class Station (value), see also #Stations. <br> Represents the railway network.*/
 
-    stack<Network> store; /**< Something to add!!!!
+    stack<Network> store; /**< Something to add!!!!*/
 private:
     string station_file; /**< Name of file with information on stations, this attribute is obtained through user input. */
     string network_file; /**< Name of file with information on networks, this attribute is obtained through user input. */
