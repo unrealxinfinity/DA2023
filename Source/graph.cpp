@@ -1,4 +1,3 @@
-//
 // Created by migue on 10/03/2023.
 //
 #include "../Header/graph.h"
@@ -60,7 +59,7 @@ Graph::~Graph() {
 
 
 //AUXILIARY FUNCTIONS
-bool Graph::testandvisit(queue<string> &queue, Network* network, Station *source, Station *target, int flow){
+bool Graph::test_and_visit(queue<string> &queue, Network* network, Station *source, Station *target, int flow){
     if((!target->isVisited() && (flow > 0))){
         target->setVisited(true);
         target->setPath(network);
@@ -71,8 +70,8 @@ bool Graph::testandvisit(queue<string> &queue, Network* network, Station *source
     return false;
 }
 
-
-void Graph::augmentFlowAlongPath(string source, string target, int bottleneck, vector<queue<string>> *path){
+void Graph::augmentFlowAlongPath(string target, int bottleneck, vector<queue<string>> *path){
+    Station*destiny = &StationSet[target];
     Station *station = &StationSet[target];
     Network *network = station->getPath();
     unsigned int currency = 0;
@@ -143,7 +142,7 @@ int Graph::edmondsKarp(string source, string target, vector<queue<string>> *path
         }
     }
     while((flow = bfs(source, target)) != 0){
-        augmentFlowAlongPath(source, target, flow, path);
+        augmentFlowAlongPath(target, flow, path);
         max_flow += flow;
     }
     return max_flow;
@@ -170,12 +169,12 @@ int Graph::bfs(string source, string target){
             int capacity = it->second.getcapacity();
             string d = it->second.getDest();
             dest = &StationSet[d];
-            if(testandvisit(q, &it->second, station, dest, capacity - it->second.getFlow()) && (target == d)) a = true;
+            if(test_and_visit(q, &it->second, station, dest, capacity - it->second.getFlow()) && (target == d)) a = true;
         }
         for(PointerNetworks::iterator it = station->incoming.begin(); it != station->incoming.end(); it++){
             string o = it->first;
             dest = &StationSet[o];
-            testandvisit(q, it->second, dest, station, it->second->getFlow());
+            test_and_visit(q, it->second, dest, station, it->second->getFlow());
         }
     }
     station = &StationSet[target];
@@ -234,8 +233,6 @@ vector<pair<string, string>> Graph::stationPairs(){
     }
     return final;
 }
-
-
 
 
 
@@ -332,7 +329,7 @@ void Graph::edmondsKarp_noflowreset(string source, string line){
     string target = "";
     vector<queue<string>> path;
     while((flow = bfs(source, &target, line)) != 0){
-        augmentFlowAlongPath(source, target, flow, &path);
+        augmentFlowAlongPath(target, flow, &path);
     }
 }
 int Graph::bfs(string source, string *target, string line){
@@ -356,13 +353,13 @@ int Graph::bfs(string source, string *target, string line){
             string d = it->second.getDest();
             dest = &StationSet[d];
             if(dest->getLine()!=line) continue;
-            testandvisit(q, &it->second, station, dest, capacity - it->second.getFlow());
+            test_and_visit(q, &it->second, station, dest, capacity - it->second.getFlow());
         }
         for(PointerNetworks::iterator it = station->incoming.begin(); it != station->incoming.end(); it++){
             string o = it->first;
             dest = &StationSet[o];
             if(dest->getLine() != line) continue;
-            testandvisit(q, it->second, dest, station, it->second->getFlow());
+            test_and_visit(q, it->second, dest, station, it->second->getFlow());
         }
     }
     station = &StationSet[*target];
@@ -405,7 +402,7 @@ int Graph::edmondsKarp_noflowreset_eachline(string source, string target, string
     int max_flow = 0;
     vector<queue<string>> path;
     while((flow = bfs(source, target, line)) != 0){
-        augmentFlowAlongPath(source, target, flow, &path);
+        augmentFlowAlongPath(target, flow, &path);
         max_flow += flow;
     }
     return max_flow;
@@ -432,13 +429,13 @@ int Graph::bfs(string source, string target, string line){
             string d = it->second.getDest();
             dest = &StationSet[d];
             if(dest->getLine()!=line) continue;
-            if(testandvisit(q, &it->second, station, dest, capacity - it->second.getFlow()) && (d== target)) a = true;
+            if(test_and_visit(q, &it->second, station, dest, capacity - it->second.getFlow()) && (d== target)) a = true;
         }
         for(PointerNetworks::iterator it = station->incoming.begin(); it != station->incoming.end(); it++){
             string o = it->first;
             dest = &StationSet[o];
             if(dest->getLine() != line) continue;
-            testandvisit(q, it->second, dest, station, it->second->getFlow());
+            test_and_visit(q, it->second, dest, station, it->second->getFlow());
         }
     }
     station = &StationSet[target];
@@ -460,11 +457,10 @@ void Graph::print_max_flow_min_cost(string source, string target){
 }
 void Graph::max_flow_min_cost(string source, string target, vector<queue<string>> *path) {
     edmondsKarp(source, target, path);
-    while (search(source, target)) {
-        int count = 0;
+    while (is_negative_cycle(target)) {
     }
 }
-bool Graph::search(string source, string target) {
+bool Graph::is_negative_cycle(string target) {
     for (Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++) {
         iter->second.setVisited(false);
         iter->second.setDist(INT_MAX);
@@ -492,7 +488,7 @@ bool Graph::search(string source, string target) {
                 else flow = 0;
                 int dist = station->getDist() - flow;
                 if (station->getDist() == INT_MAX) dist = INT_MAX;
-                if (test_and_visit_search(network, station, dest, flow, dist) && (i == StationSet.size())) {
+                if (test_and_visit(network, dest, flow, dist) && (i == StationSet.size())) {
                     destiny->setIndegree(destiny->getIndegree() + find_better_path(dest));
                     return true;
                 }
@@ -509,7 +505,7 @@ bool Graph::search(string source, string target) {
                 else flow = 0;
                 int dist = station->getDist() + flow;
                 if (station->getDist() == INT_MAX) dist = INT_MAX;
-                if (test_and_visit_search(&it->second, station, dest, flow, dist) && (i == StationSet.size())) {
+                if (test_and_visit(&it->second, dest, flow, dist) && (i == StationSet.size())) {
                     destiny->setIndegree(destiny->getIndegree() + find_better_path(dest));
                     return true;
                 }
@@ -518,7 +514,7 @@ bool Graph::search(string source, string target) {
     }
     return false;
 }
-bool Graph::test_and_visit_search(Network *network, Station *source, Station *target, int flow, int dist){
+bool Graph::test_and_visit(Network *network, Station *target, int flow, int dist){
     if(flow > 0){
         if(target->getDist() > dist){
             target->setDist(dist);
@@ -636,8 +632,6 @@ void Graph::topk_reduced_connectivity(priority_queue <pair<int, pair<string, str
         }
     }
 }
-
-
 
 
 

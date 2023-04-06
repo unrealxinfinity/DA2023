@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <unordered_set>
 #include <string>
+#include <unordered_map>
 using namespace std;
 /********************** Network *****************************/
 
@@ -39,14 +40,11 @@ protected:
     string dest; // destination Station
     int capacity; // Network// capacity, can also be used for capacity
     string service;
-    string memory;
     // auxiliary fields
     bool selected = false;
     // used for bidirectional Networks
     string orig;
     Network* reverse;
-    int Alfa = 0;
-    int Standard = 0;
     //int currency = 0;
     int currency_cap = 0;
 

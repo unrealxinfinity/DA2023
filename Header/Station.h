@@ -34,7 +34,6 @@ public:
     double getDist() const;
     int getBN() const;
 
-    int getPi() const;
     string getLine() const;
     string getMuni() const;
     string getDistrict() const;
@@ -48,13 +47,12 @@ public:
     void setIndegree(unsigned int indegree);
     void setDist(double dist);
     void setBN(int bn);
-    void setPi(int pi);
     void setAdj_cap(int adj_cap);
-    void setPath(Network* path);
+    void setPath(Network *network);
     /**
      * Auxiliary method to Graph::addBidirectionalNetwork(). <br>
      * Adds a new network to the Station's #adj and to the #incoming of the aforementioned network's sink.
-     * @param dest Network's sink.
+     * @param dest network's sink.
      * @param w Weight of the network.
      * @param service Type of service provided by the network (Standard or Alpha).
      * @return Newly created network.
@@ -77,7 +75,6 @@ protected:
     unsigned int indegree;
     double dist = 0;
     int bottleneck = 0;
-    int pi = 0;
     int adj_cap = 0;
     Network* path;
 

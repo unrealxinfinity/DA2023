@@ -10,12 +10,14 @@ bool is_validStation(Graph graph, string name) {
 }
 Graph LoadGraph(){
     string stationsPath,networkPath;
-    cout<<"Please indicate the path for the file that contains Stations:"<<endl;
+    cout<<"Please indicate the path for the file that contains Stations or write back to go back"<<endl;
     cin.ignore();
     getline(cin,stationsPath);
-    cout<<"Please indicate the path for the file that contains networks:"<<endl;
+    if (stationsPath == "back") return Graph();
+    cout<<"Please indicate the path for the file that contains Networks or write back to go back"<<endl;
+    cin.ignore();
     getline(cin,networkPath);
-
+    if (stationsPath == "back") return Graph();
     Graph g = Graph(stationsPath,networkPath);
     if(g.StationSet.empty()){
         cout<<"Graph failed to initialize, check the input paths!"<<endl;
@@ -201,7 +203,6 @@ void FailuresMenu(Graph* graph) {
                 graph->restore_maintenance();
                 break;
             case 2:
-
                 cout << "Please provide the number of stations you wish to see or write back to go back\n";
                 getline(cin, k);
                 while (k!="back") {
@@ -210,7 +211,6 @@ void FailuresMenu(Graph* graph) {
                 }
                 if (k == "back") break;
                 graph->print_topk_reduced_connectivity(stoi(k));
-
                 break;
             default:
                 cout << "Invalid input!\n";
@@ -223,10 +223,10 @@ void FailuresMenu(Graph* graph) {
 int main() {
     std::string path1="../DataSet/stations.csv";
     std::string path2="../DataSet/network.csv";
-
-    //graph.print_all_station_pairs();
     Graph graph;
     graph= Graph(path1,path2);
+
+    //graph.print_all_station_pairs();
     /*int a = graph.max_flow_foreachline("Lisboa Oriente");
     cout << a << '\n';*/
     //graph.print_topk_budget_municipios(250);
@@ -239,6 +239,7 @@ int main() {
     //graph.print_topk_reduced_connectivity(5);
     //graph.print_edmondsKarp("Santarém", "Lisboa Oriente");
     //graph.print_all_station_pairs();
+
     bool on = true;
     while (on) {
         int input;
@@ -251,7 +252,7 @@ int main() {
             cin.clear();
             cin.ignore(INT_MAX, '\n');
             cout << "Invalid input!\n";
-            cout << "1- Load Graph(Must initialize once for other function)"
+            cout << "1- Load Graph(Must initialize for other functions to work)"
                     "2 -> Basic Service Metrics\n"
                     "3 -> Operation Cost Optimization\n"
                     "4 -> Reliability and Sensitivity to Line Failures\n"
@@ -265,12 +266,15 @@ int main() {
                 graph=LoadGraph();
                 break;
             case 2:
+                if (graph.StationSet.empty()) {cout << "Graph has not been loaded yet!\n"; break;}
                 MetricMenu(&graph);
                 break;
             case 3:
+                if (graph.StationSet.empty()) {cout << "Graph has not been loaded yet!\n"; break;}
                 OptimizationMenu(&graph);
                 break;
             case 4:
+                if (graph.StationSet.empty()) {cout << "Graph has not been loaded yet!\n"; break;}
                 FailuresMenu(&graph);
                 break;
             default:
