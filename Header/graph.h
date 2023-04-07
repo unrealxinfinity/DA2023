@@ -183,7 +183,8 @@ public:
     /**
      * Calculates the maximum flow between each pair of Stations, stating by calculating the max flow between the two most likely to have the max flow and then iterating through each pair of stations and  only calculating the max flow on those who have a posibility to be better than the current best pair
      * @see
-     * @return
+     * @return pair/s of the station/s with the maximum flow among all the combinations of source-dest
+     * @note Time Complexity(
      */
     vector<pair<string, string>> stationPairs();
     /**
