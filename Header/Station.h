@@ -38,6 +38,7 @@ public:
     string getMuni() const;
     string getDistrict() const;
     int getAdj_cap() const;
+    int getInc_flow() const;
     Network* getPath() const;
     PointerNetworks getIncoming() const;
 
@@ -48,6 +49,7 @@ public:
     void setDist(double dist);
     void setBN(int bn);
     void setAdj_cap(int adj_cap);
+    void setInc_flow(int inc_flow);
     void setPath(Network *network);
     /**
      * Auxiliary method to Graph::addBidirectionalNetwork(). <br>
@@ -76,6 +78,7 @@ protected:
     double dist = 0;
     int bottleneck = 0;
     int adj_cap = 0;
+    int inc_flow = 0;
     Network* path;
 
 public:
