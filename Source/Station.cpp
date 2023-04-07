@@ -99,6 +99,9 @@ int Station::getBN() const {
 int Station::getAdj_cap() const {
     return this->adj_cap;
 }
+int Station::getInc_flow() const {
+    return this->inc_flow;
+}
 
 string Station::getLine() const{
     return this->Line;
@@ -142,6 +145,9 @@ void Station::setBN(int bn) {
 }
 void Station::setAdj_cap(int adj_cap) {
     this->adj_cap = adj_cap;
+}
+void Station::setInc_flow(int inc_flow) {
+    this->inc_flow = inc_flow;
 }
 void Station::setPath(Network*network) {
     this->path = network;
