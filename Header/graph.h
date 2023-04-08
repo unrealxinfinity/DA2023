@@ -57,7 +57,7 @@ public:
     */
     void insertNetworks();
     /**
-     * Outputs the network path from a station \p source to a station \p target, together with the flow at the end of said path.
+     * Outputs the network path from a station \p source to a station \p target, together with the flow and cost at the end of said path.
      * @param orig Keeps the first source station, used for recursion related reasons.
      * @param source
      * @param target
@@ -65,6 +65,12 @@ public:
      * @note Time complexity O(V*E²).
      */
     void print_path(string orig, string source, string target, int bottleneck);
+    /**
+     * Outputs the network path from all start of line stations to \p target, together with the flow and cost at the end of said path.
+     * @param target
+     * @note Time complexity O(V*E³).
+     */
+    void print_all_super_source_paths(string target);
     /**
      * Outputs the maximum flow between a \p source and \p target station.
      * @see edmondsKarp().
@@ -233,6 +239,23 @@ public:
      */
     bool valid_remove(string source, string target);
     /**
+     * Checks if the given path from source to target is reachable. <br>
+     * A path is reachable when you start at the source and navigate through each network with flow until you reach the target.
+     * @param source network's source station.
+     * @param target network's sink station.
+     * @return True if path can be made from source to target and False if not.
+     * @note Time Complexity O(V+E).
+     */
+    bool is_valid_path(string source, string target);
+    /**
+     * Checks if the given station is the start of a line. <br>
+     * A station is the start of a line when it only has one Network origination from it that arrives to a station of the same line.
+     * @param source network's source station.
+     * @return True if is the start of a line and False if not.
+     * @note Time Complexity O(E).
+     */
+    bool is_valid_source(string source);
+    /**
      * Obtains the maximum flow between all pairs of Stations while reducing the number of iteration by tracking the likeliness of a pair to have the maximum flow.
      * @see edmondsKarp().
      * @param final Vector of pairs with the maximum flow (there can be multiple pairs).
@@ -267,7 +290,7 @@ public:
      * @see is_negative_cycle(), edmondsKarp().
      * @param source
      * @param target
-     * @note Time Complexity O().
+     * @note Time Complexity O(V²*E²).
      */
     void max_flow_min_cost(string source, string target);
     /**
@@ -276,7 +299,7 @@ public:
      * @see find_better_path(), test_and_visit(Network *network, Station *target, int flow, int dist).
      * @param target
      * @return True if current paths have a negative cycle and false otherwise.
-     * @note Time Complexity O().
+     * @note Time Complexity O(V*E).
      */
     bool is_negative_cycle(string target);
     /**
@@ -284,13 +307,13 @@ public:
      * Given that the currently setted paths, ending in \p station, have a negative cycle, changes the flow of said cycle's edges based on the cycle's bottleneck, effectively eradicating the aforementioned cycle.
      * @param station
      * @return Currently updated best cost.
-     * @note Time Complexity O().
+     * @note Time Complexity O(E).
      */
     int find_better_path(Station *station);
     /**
      * Given a group of networks in maintenance, calculates the stations most affected by the absence of those networks.
      * @param pq Priority queue of networks in maintenance.
-     * @note Time Complexity O().
+     * @note Time Complexity O(V⁴*E + V³*E²).
      */
     void topk_reduced_connectivity(priority_queue <pair<int, pair<string, string>>> &pq);
     /**
@@ -323,7 +346,6 @@ public:
 private:
     string station_file; /**< Name of file with information on stations, this attribute is obtained through user input. */
     string network_file; /**< Name of file with information on networks, this attribute is obtained through user input. */
-
 
 };
 #endif//UNTITLED4_GRAPH_H
