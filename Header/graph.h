@@ -1,7 +1,3 @@
-//
-// Created by migue on 10/03/2023.
-//
-
 #ifndef UNTITLED4_GRAPH_H
 #define UNTITLED4_GRAPH_H
 
@@ -21,15 +17,13 @@
 
 
 using namespace std;
-
 typedef unordered_map<string,Station> Stations;
+/************************* Graph  **************************/
 class Graph {
 public:
-    Graph(const string station_file,const string network_file);
     Graph();
+    Graph(const string station_file,const string network_file);
     ~Graph();
-    bool addStation(string name);
-    bool addNetwork(string src, string dest, int capacity, string service);
     /**
      * Assigns a new network to both the source and sink stations of the aforementioned network.
      * @param src network's source station.
@@ -40,9 +34,9 @@ public:
      */
     void addBidirectionalNetwork(string src, string dest, int w, string service);
     /**
-     * Checks if a station exists (in the set of stations - #StationSet) given it's name.
+     * Checks if a station exists (in the set of stations - #StationSet) given it's \p name.
      * @param name
-     * @return Parameter \p name if station was found and string 'error' otherwise.
+     * @return Parameter \p name if station was found, string 'error' otherwise.
      * @note Time Complexity O(1).
      */
     string find_code(string name);
@@ -73,7 +67,7 @@ public:
     void print_all_super_source_paths(string target);
     /**
      * Outputs the maximum flow between a \p source and \p target station.
-     * @see edmondsKarp().
+     * @see edmondsKarp()
      * @param source
      * @param target
      * @note Time Complexity O(V²*E + V*E²).
@@ -81,7 +75,7 @@ public:
     void print_edmondsKarp(string source, string target);
     /**
      * Outputs the pairs of stations with the highest flow amongst all pairs of stations.
-     * @see stationPairs().
+     * @see stationPairs()
      * @param final Vector of pairs with the maximum flow (there can be multiple pairs).
      * @note Time Complexity O(V⁴*E + V³*E²).
      */
@@ -95,28 +89,28 @@ public:
     void print_reduced_connectivity(string source, string target);
     /**
      * Outputs the top \p k stations most affected by a decrease in the railway network connectivity (networks in maintenance).
-     * @see topk_reduced_connectivity().
+     * @see topk_reduced_connectivity()
      * @param k
-     * @note Time Complexity O().
+     * @note Time Complexity O(V⁴*E + V³*E²).
      */
     void print_topk_reduced_connectivity(int k);
     /**
      * Outputs the top \p k municipalities with higher cost, in descending order.
-     * @see topk_budget_municipios().
+     * @see topk_budget_municipios()
      * @param k
      * @note Time Complexity O(V³*E + V²*E²).
      */
     void print_topk_budget_municipios(int k);
     /**
      * Outputs the top \p k districts with higher cost, in descending order.
-     * @see topk_budget_districts().
+     * @see topk_budget_districts()
      * @param k
      * @note Time Complexity O(V³*E + V²*E²).
      */
     void print_topk_budget_districts(int k);
     /**
      * Outputs the maximum flow arriving at a given station \p target.
-     * @see max_flow_foreachline().
+     * @see max_flow_foreachline()
      * @param target
      * @note Time Complexity O(V³*E + V²*E²).
      */
@@ -126,12 +120,12 @@ public:
      * @see max_flow_min_cost()
      * @param source
      * @param target
-     * @note Time Complexity O().
+     * @note Time Complexity O(V²*E²).
      */
     void print_max_flow_min_cost(string source, string target);
     /**
      * Outputs the top \p k stations most affected by a network maintenance, in the context of traveling between a \p source and \p target station.
-     * @see topk_reduced_connectivityALTERNITIVE().
+     * @see topk_reduced_connectivityALTERNITIVE()
      * @param source
      * @param target
      * @param k
@@ -145,7 +139,7 @@ public:
      * @param source
      * @param target
      * @return \p target station's bottleneck if the BFS reached it and 0 otherwise.
-     * @note Time Complexity O(V+E) (vertices + edges) <- number of vertexes + edges + (incoming = number of edges)
+     * @note Time Complexity O(V+E)
      */
     int bfs(string source, string target);
     /**
@@ -192,7 +186,7 @@ public:
      */
     bool test_and_visit(queue<string> &queue, Network * network, Station *source, Station *target, int flow);
     /**
-     * Auxiliary method to is_negative_cycle().
+     * Auxiliary method to is_negative_cycle(). <br>
      * Sets the path and dist of \p target if the given \p flow is higher than zero and the \p target's dist is bigger than the given \p dist.
      * @param network
      * @param target Sink of \p network.
@@ -204,7 +198,7 @@ public:
     bool test_and_visit(Network *network, Station *target, int flow, int dist);
     /**
      * Uses BFS to calculate shortest augmenting paths between a \p source and \p target station, in order to calculate the maximum flow by augmenting those paths.
-     * @see bfs(string source, string target), augmentFlowAlongPath().
+     * @see bfs(string source, string target) <br> augmentFlowAlongPath()
      * @param source
      * @param target
      * @return Maximum flow reaching \p target station from \p source station.
@@ -213,7 +207,7 @@ public:
     int edmondsKarp(string source, string target);
     /**
     * Uses BFS to calculate shortest augmenting paths starting on station \p source and taking in consideration only stations from the given \p line, in order to then augment those paths.
-    * @see bfs(string source, string *target, string line), augmentFlowAlongPath().
+    * @see bfs(string source, string *target, string line) <br> augmentFlowAlongPath()
     * @param source
     * @param line
     * @note Time Complexity O(V²*E + V*E²)
@@ -221,7 +215,7 @@ public:
     void edmondsKarp_noflowreset(string source, string line);
     /**
     * Uses BFS to calculate shortest augmenting paths between a \p source and \p target station, taking in consideration only stations from the given \p line, in order to calculate the maximum flow by augmenting those paths.
-    * @see bfs(string source, string target, string line), augmentFlowAlongPath()
+    * @see bfs(string source, string target, string line) <br> augmentFlowAlongPath()
     * @param source
     * @param target
     * @param line
@@ -234,31 +228,31 @@ public:
      * A network can be removed if it's source and sink make for an existing network.
      * @param source network's source station.
      * @param target network's sink station.
-     * @return True if it can be removed and false otherwise.
+     * @return True if it can be removed, false otherwise.
      * @note Time Complexity O(1).
      */
     bool valid_remove(string source, string target);
     /**
-     * Checks if the given path from source to target is reachable. <br>
-     * A path is reachable when you start at the source and navigate through each network with flow until you reach the target.
-     * @param source network's source station.
-     * @param target network's sink station.
-     * @return True if path can be made from source to target and False if not.
+     * Checks if the given path from \p source to \p target is reachable. <br>
+     * A path is reachable if it is possible to start at the source and navigate through each network with flow until you reach the target.
+     * @param source
+     * @param target
+     * @return True if path can be made from \p source to \p target, false otherwise.
      * @note Time Complexity O(V+E).
      */
     bool is_valid_path(string source, string target);
     /**
-     * Checks if the given station is the start of a line. <br>
-     * A station is the start of a line when it only has one Network origination from it that arrives to a station of the same line.
-     * @param source network's source station.
-     * @return True if is the start of a line and False if not.
+     * Checks if the given \p station is the start of a line. <br>
+     * A station is the start of a line when it only has one Network originating from it that arrives at a station of the same line.
+     * @param source
+     * @return True if is the start of a line, false if not.
      * @note Time Complexity O(E).
      */
     bool is_valid_source(string source);
     /**
-     * Obtains the maximum flow between all pairs of Stations while reducing the number of iteration by tracking the likeliness of a pair to have the maximum flow.
-     * @see edmondsKarp().
-     * @param final Vector of pairs with the maximum flow (there can be multiple pairs).
+     * Obtains the maximum flow between all pairs of stations while reducing the number of iteration by tracking the likeliness of a pair to have the maximum flow.
+     * @see edmondsKarp()
+     * @param final Vector setted with the pairs with the maximum flow (there can be multiple pairs). Relevant to caller method.
      * @return The maximum flow obtained.
      * @note Time Complexity O(V⁴*E + V³*E²).
      */
@@ -279,7 +273,7 @@ public:
     void topk_budget_districts(priority_queue<pair<int, string>> &pq);
     /**
      * Obtains the maximum flow between all stations and \p target station, while reducing the number of iteration by tracking the likeliness of a selected pair to have the maximum flow.
-     * @see edmondsKarp_noflowreset_eachline().
+     * @see edmondsKarp_noflowreset_eachline()
      * @param target
      * @return The max flow calculated.
      * @note Time Complexity O(V³*E + V²*E²).
@@ -287,23 +281,23 @@ public:
     int max_flow_foreachline(string target);
     /**
      * Calculates the maximum flow of the path with minimum cost between a \p source and \p target station.
-     * @see is_negative_cycle(), edmondsKarp().
+     * @see is_negative_cycle() <br> edmondsKarp()
      * @param source
      * @param target
      * @note Time Complexity O(V²*E²).
      */
     void max_flow_min_cost(string source, string target);
     /**
-     * Auxiliary method to max_flow_min_cost().
+     * Auxiliary method to max_flow_min_cost(). <br>
      * Checks, going backwards, if the paths to station \p target, which are made up of each station's #Station::path, have a negative cycle.
-     * @see find_better_path(), test_and_visit(Network *network, Station *target, int flow, int dist).
+     * @see find_better_path() <br> test_and_visit(Network *network, Station *target, int flow, int dist)
      * @param target
      * @return True if current paths have a negative cycle and false otherwise.
      * @note Time Complexity O(V*E).
      */
     bool is_negative_cycle(string target);
     /**
-     * Auxiliary method to is_negative_cycle().
+     * Auxiliary method to is_negative_cycle(). <br>
      * Given that the currently setted paths, ending in \p station, have a negative cycle, changes the flow of said cycle's edges based on the cycle's bottleneck, effectively eradicating the aforementioned cycle.
      * @param station
      * @return Currently updated best cost.
@@ -334,14 +328,14 @@ public:
      * Given a network in maintenance, calculates the stations most affected by the absence of that network, in the context of traveling between a \p source and \p target station.
      * @param source
      * @param target
-     * @param pq Priority queue of stations most affected.
-     * @param temp Holds the flow in each station before the network goes in maintenance.
+     * @param pq Priority queue of stations most affected. Relevant to caller method.
+     * @param temp Holds the flow in each station, before the network goes in maintenance.
      * @note Time Complexity O(V²*E + V*E²).
      */
     void topk_reduced_connectivityALTERNITIVE(string source, string target, priority_queue <pair<int, string>> &pq, unordered_map<string, int> temp);
 
     Stations StationSet; /**< Unordered map of all station names(key) and respective instance of class Station (value), see also #Stations. <br> Represents the railway network.*/
-    stack<Network> store; /**< Stacks all networks that where set as in maintenance in valid_remove(). Relevant to topk_reduced_connectivity()*/
+    stack<Network> store; /**< Stacks all networks that where set as in maintenance in valid_remove(). <br> Relevant to topk_reduced_connectivity(). */
 
 private:
     string station_file; /**< Name of file with information on stations, this attribute is obtained through user input. */

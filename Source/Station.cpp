@@ -1,6 +1,3 @@
-//
-// Created by not_real_fu on 13-03-2023.
-//
 #include "../Header/Station.h"
 
 /************************* Station  **************************/
@@ -10,12 +7,6 @@ Station::Station() {}
 Station::Station(string Name, string District, string Municipality, string Township, string Line):Name(Name),District(District),Municipality(Municipality),Township(Township),Line(Line){
 }
 
- Station::Station(string Name): Name(Name) {
-    this->District="";
-    this->Municipality="";
-    this->Township="";
-    this->Line="";
-}
 
 Network Station::addNetwork(Station* dest, int capacity,string service) {
     Network newNetwork = Network(this->getName() , dest->getName(), capacity , service);
@@ -24,7 +15,6 @@ Network Station::addNetwork(Station* dest, int capacity,string service) {
     dest->incoming.insert({newNetwork.getOrig(),&newNetwork});
     return newNetwork;
 }
-
 
 void Station::removeNetwork(Station *destName) {
     auto it = adj.find(destName->Name);
@@ -37,32 +27,8 @@ void Station::removeNetwork(Station *destName) {
     iter = destName->incoming.find(Name);
     destName->adj.erase(it);
     destName->incoming.erase(iter);
-    /*while (it != adj.end()) {
-        Network network = it->first;
-        string dest = network.getDest();
-*/
-        /* if (dest== destName) {
-            it = adj.erase(it);
-            // Also remove the corresponding Network from the incoming list
-            auto targetDest= Networks.
-            auto it2 = targetDest.incoming.begin();
-            while (it2 != targetDest.incoming.end()) {
-                if ((*it2)->getOrig() == Name) {
-                    it2 = targetDest.incoming.erase(it2);
-                }
-                else {
-                    it2++;
-                }
-            }
-            delete *it;
-            removedNetwork = true; // allows for multiple Networks to connect the same pair of vertices (multigraph)
-        }
-        else {
-            it++;
-        }
-    }
-    return removedNetwork;*/
 }
+
 bool Station::operator<(const Station & Station) const {
     return this->dist < Station.dist;
 }
@@ -73,11 +39,7 @@ bool Station::operator==(const Station &other) const{
 string Station::getName() const {
     return this->Name;
 }
-/*
-Networks Station::getAdj() const {
-    return this->adj;
-}
-*/
+
 bool Station::isVisited() const {
     return this->visited;
 }
@@ -93,12 +55,15 @@ unsigned int Station::getIndegree() const {
 double Station::getDist() const {
     return this->dist;
 }
+
 int Station::getBN() const {
     return this->bottleneck;
 }
+
 int Station::getAdj_cap() const {
     return this->adj_cap;
 }
+
 int Station::getInc_flow() const {
     return this->inc_flow;
 }
@@ -110,19 +75,13 @@ string Station::getLine() const{
 string Station::getMuni() const{
     return this->Municipality;
 }
+
 string Station::getDistrict() const{
     return this->District;
 }
 
-PointerNetworks Station::getIncoming() const {
-    return this->incoming;
-}
 Network* Station::getPath() const{
     return this->path;
-}
-
-void Station::setName(string Name) {
-    this->Name = Name;
 }
 
 void Station::setVisited(bool visited) {
@@ -140,17 +99,19 @@ void Station::setIndegree(unsigned int indegree) {
 void Station::setDist(double dist) {
     this->dist = dist;
 }
+
 void Station::setBN(int bn) {
     this->bottleneck = bn;
 }
+
 void Station::setAdj_cap(int adj_cap) {
     this->adj_cap = adj_cap;
 }
+
 void Station::setInc_flow(int inc_flow) {
     this->inc_flow = inc_flow;
 }
-void Station::setPath(Network*network) {
+
+void Station::setPath(Network* network) {
     this->path = network;
 }
-
-

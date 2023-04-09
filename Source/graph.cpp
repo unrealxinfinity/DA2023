@@ -1,12 +1,9 @@
-// Created by migue on 10/03/2023.
-//
 #include "../Header/graph.h"
 
-Graph::Graph() {
-    station_file="";
-    network_file="";
+/************************* Graph  **************************/
 
-}
+Graph::Graph():station_file(""), network_file("") {}
+
 Graph::Graph(const string sf, const string nf) {
     station_file=sf;
     network_file=nf;
@@ -21,24 +18,6 @@ string Graph::find_code(string name) {
     }
     return "error";
 }
-/*
- *  Adds a Station with a given content or info (in) to a graph (this).
- *  Returns true if successful, and false if a Station with that content already exists.
- */
-bool Graph::addStation(string name) {
-    Station res = StationSet.find(name)->second;
-    StationSet.insert(pair<string, Station>(name, res));
-    return true;
-}
-/*bool Graph::addNetwork(string src, string dest, int capacity, string service) {
-    auto v1 = StationSet.find(src);
-    auto v2 = StationSet.find(dest);
-    if (v1 == StationSet.end() || v2 == StationSet.end())
-        return false;
-    v1->addNetwork(v2, capacity, service);
-    return true;
-}*/
-
 
 void Graph::addBidirectionalNetwork(string src, string dest, int w,string service) {
     Station& source_it = StationSet[src];
@@ -46,16 +25,10 @@ void Graph::addBidirectionalNetwork(string src, string dest, int w,string servic
 
     source_it.addNetwork(&destination_it, w,service);
     destination_it.addNetwork(&source_it, w,service);
-    /*auto targetNet1= source->getAdj().find(e1->getDest());
-    auto targetNet2 = target->adj.find(e2->getDest());
-    targetNet1->second->setReverse(targetNet2->second);
-    targetNet2->second->setReverse(targetNet1->second);*/
 }
 
 
-Graph::~Graph() {
-
-}
+Graph::~Graph() {}
 
 
 //AUXILIARY FUNCTIONS
@@ -76,6 +49,7 @@ void Graph::print_all_super_source_paths(string target){
         }
     }
 }
+
 bool Graph::is_valid_source(string source){
     Station *station = &StationSet[source];
     int count = 0;
@@ -87,29 +61,25 @@ bool Graph::is_valid_source(string source){
     return true;
 }
 
-
-
-bool Graph::is_valid_path(string source, string target){
+bool Graph::is_valid_path(string source, string target) {
     queue<string> q;
     Station *station = &StationSet[source];
     q.push(source);
-    if(source == target)return false;
-    while(!q.empty()){
+    if (source == target)return false;
+    while (!q.empty()) {
         string v = q.front();
         q.pop();
         station = &StationSet[v];
-        for (Networks::iterator it = station->adj.begin(); it != station->adj.end(); it++){
+        for (Networks::iterator it = station->adj.begin(); it != station->adj.end(); it++) {
             Station *dest = &StationSet[it->second.getDest()];
-            if(it->second.getFlow()>0){
-                if(dest->getName() == target)return true;
+            if (it->second.getFlow() > 0) {
+                if (dest->getName() == target)return true;
                 q.push(it->second.getDest());
             }
         }
     }
     return false;
 }
-
-
 
 void Graph::print_path(string orig, string source, string target, int bottleneck){
     Station *destiny = &StationSet[target];
@@ -139,8 +109,6 @@ void Graph::print_path(string orig, string source, string target, int bottleneck
         }
     }
 }
-
-
 
 bool Graph::test_and_visit(queue<string> &queue, Network* network, Station *source, Station *target, int flow){
     if((!target->isVisited() && (flow > 0))){
@@ -193,8 +161,6 @@ void Graph::restore_maintenance(){
     }
 }
 
-
-
 bool Graph::valid_remove(string source, string target){
     Station *station = &StationSet[source];
     auto it = station->adj.find(target);
@@ -203,14 +169,11 @@ bool Graph::valid_remove(string source, string target){
     return true;
 }
 
-
-
 void Graph::remove_network(string source, string target){
     Station *station = &StationSet[source];
     Station *dest = &StationSet[target];
     station->removeNetwork(dest);
 }
-
 
 
 //EXERCISE 2.1 AND AUXILIARY FUNCTION
@@ -219,7 +182,6 @@ void Graph::print_edmondsKarp(string source, string target){
     int flow = edmondsKarp(source, target);
     cout << "The maximum number of trains between " << source << " and " << target << " is " << flow << " and it has cost " << station->getIndegree() << "$\n";
 }
-
 
 int Graph::edmondsKarp(string source, string target) {
     int max_flow = 0;
@@ -277,7 +239,6 @@ int Graph::bfs(string source, string target){
 //END OF AUXILIARY FUNCTIONS
 
 
-
 //EXERCISE 2.2
 void Graph::print_all_station_pairs(vector<pair<string,string>> *final){
     int max_flow = stationPairs(final);
@@ -286,6 +247,7 @@ void Graph::print_all_station_pairs(vector<pair<string,string>> *final){
         cout << "From " << p.first << " <-> " << p.second << " [Max Flow = " << max_flow << "]\n";
     }
 }
+
 int Graph::stationPairs(vector<pair<string, string>> *final){
     int max = 0;
     string st = "";
@@ -323,8 +285,6 @@ int Graph::stationPairs(vector<pair<string, string>> *final){
 }
 
 
-
-
 //EXERCISE 2.3
 void Graph::print_topk_budget_districts(int k){
     priority_queue <pair<int, string>> pq;
@@ -337,6 +297,7 @@ void Graph::print_topk_budget_districts(int k){
         k--;
     }
 }
+
 void Graph::topk_budget_districts(priority_queue<pair<int, string>> &pq){
     for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
         for(Networks::iterator it = iter->second.adj.begin(); it != iter->second.adj.end(); it++){
@@ -369,20 +330,19 @@ void Graph::topk_budget_districts(priority_queue<pair<int, string>> &pq){
         pq.push(pair<int, string>(it->second, it->first));
     }
 }
+
 void Graph::print_topk_budget_municipios(int k){
     priority_queue <pair<int, string>> pq;
     topk_budget_municipios(pq);
     if(k > pq.size())k=pq.size();
     cout << "The top " << k << " municipalities which require more budget are:\n";
     while(k>0){
-        if(pq.top().second == "ALMADA"){
-            int count = 0;
-        }
         cout << pq.top().second << " " << pq.top().first << "$\n";
         pq.pop();
         k--;
     }
 }
+
 void Graph::topk_budget_municipios(priority_queue<pair<int, string>> &pq){
     for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
         for(Networks::iterator it = iter->second.adj.begin(); it != iter->second.adj.end(); it++){
@@ -422,6 +382,7 @@ void Graph::topk_budget_municipios(priority_queue<pair<int, string>> &pq){
         pq.push(pair<int, string>(it->second, it->first));
     }
 }
+
 void Graph::edmondsKarp_noflowreset(string source, string line){
     int flow = 0;
     string target = "";
@@ -429,6 +390,7 @@ void Graph::edmondsKarp_noflowreset(string source, string line){
         augmentFlowAlongPath(target, flow);
     }
 }
+
 int Graph::bfs(string source, string *target, string line){
     for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
         iter->second.setVisited(false);
@@ -468,7 +430,6 @@ int Graph::bfs(string source, string *target, string line){
 }
 
 
-
 //EXERCISE 2.4
 void Graph::print_max_flow_foreachline(string target){
     cout << "The Maximum number of trains that can simultaneously arrive at " << target << " are: ";
@@ -476,6 +437,7 @@ void Graph::print_max_flow_foreachline(string target){
     int max_flow = max_flow_foreachline(target);
     cout << max_flow << " and with cost " << station->getIndegree() << "$\n";
 }
+
 int Graph::max_flow_foreachline(string target){
     Station *station = &StationSet[target];
     unordered_set<string> lines;
@@ -502,6 +464,7 @@ int Graph::max_flow_foreachline(string target){
     }
     return max_flow;
 }
+
 int Graph::edmondsKarp_noflowreset_eachline(string source, string target, string line){
     int flow = 0;
     int max_flow = 0;
@@ -511,6 +474,7 @@ int Graph::edmondsKarp_noflowreset_eachline(string source, string target, string
     }
     return max_flow;
 }
+
 int Graph::bfs(string source, string target, string line){
     for(Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++){
         iter->second.setVisited(false);
@@ -556,11 +520,13 @@ void Graph::print_max_flow_min_cost(string source, string target){
     max_flow_min_cost(source, target);
     cout << "The maximum number of trains with minimum cost between " << source << " and " << target << " is " << station->getInc_flow() << " and it has cost " << station->getIndegree() << "$\n";
 }
+
 void Graph::max_flow_min_cost(string source, string target) {
     edmondsKarp(source, target);
     while (is_negative_cycle(target)) {
     }
 }
+
 bool Graph::is_negative_cycle(string target) {
     for (Stations::iterator iter = StationSet.begin(); iter != StationSet.end(); iter++) {
         iter->second.setVisited(false);
@@ -595,9 +561,6 @@ bool Graph::is_negative_cycle(string target) {
                 dest = &StationSet[it->second.getDest()];
                 if (it->second.getservice() == "STANDARD") currency = 2;
                 else currency = 4;
-                if (station->getName() == "Monte das Flores") {
-                    int c = 0;
-                }
                 int flow;
                 if (it->second.getcapacity() - it->second.getFlow() > 0) flow = currency;
                 else flow = 0;
@@ -612,6 +575,7 @@ bool Graph::is_negative_cycle(string target) {
     }
     return false;
 }
+
 bool Graph::test_and_visit(Network *network, Station *target, int flow, int dist){
     if(flow > 0){
         if(target->getDist() > dist){
@@ -678,16 +642,11 @@ int Graph::find_better_path(Station *station){
 }
 
 
-
-
-
 //EXERCISE 4.1
 void Graph::print_reduced_connectivity(string source, string target){
     cout << "With the reduced connectivity -> ";
     print_edmondsKarp(source, target);
 }
-
-
 
 
 //EXERCISE 4.2
@@ -702,6 +661,7 @@ void Graph::print_topk_reduced_connectivity(int k){
         k--;
     }
 }
+
 void Graph::topk_reduced_connectivity(priority_queue <pair<int, pair<string, string>>> &pq) {
     stack<Network> temp = store;
 
@@ -765,6 +725,7 @@ void Graph::print_topk_reduced_connectivityALTERNATIVE(string source, string tar
         store.pop();
     }
 }
+
 void Graph::topk_reduced_connectivityALTERNITIVE(string source, string target, priority_queue <pair<int, string>> &pq, unordered_map<string, int> temp) {
     remove_network(store.top().getOrig(), store.top().getDest());
     edmondsKarp(source, target);
@@ -774,7 +735,6 @@ void Graph::topk_reduced_connectivityALTERNITIVE(string source, string target, p
         pq.push(pair<int, string>(abs(station.getInc_flow() - flow_before), station.getName()));
     }
 }
-
 
 
 //GRAPH CREATION
@@ -794,7 +754,6 @@ void Graph::insertStations() {
         Station station = Station(Name, District, Municipality, Township, Line);
         StationSet.insert(pair<string, Station>(Name,station));
     }
-
 }
 
 void Graph::insertNetworks() {

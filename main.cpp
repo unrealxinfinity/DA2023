@@ -21,12 +21,14 @@ bool is_validPath(Graph graph, string source, string target){
     }
     return false;
 }
+
 bool check_number(string str) {
     for (int i = 0; i < str.length(); i++)
         if (isdigit(str[i]) == false)
             return false;
     return true;
 }
+
 bool LoadGraph(Graph *graph){
     string stationsPath,networkPath;
     cout<<"Please indicate the path for the file that contains Stations"<<endl;
@@ -56,6 +58,7 @@ bool LoadGraph(Graph *graph){
     return true;
 
 }
+
 bool MetricMenu(Graph *graph) {
     bool open = true;
     string src, target, final;
@@ -168,8 +171,7 @@ bool MetricMenu(Graph *graph) {
                         }
                     }
                     else {
-                        cout
-                                << "Please provide the destination station or write all to see all the best paths.\n";
+                        cout << "Please provide the destination station or write all to see all the best paths.\n";
                         getline(cin, target);
                         while (target != "back" && target != "all" && target != "menu" && target != "quit") {
                             bool test = false;
@@ -424,9 +426,9 @@ bool OptimizationMenu(Graph* graph) {
             if(final == "quit")return false;
         }
     }
-
     return true;
 }
+
 bool FailuresMenu(Graph* graph) {
     bool open = true;
     string src, target, network_src, network_dest, final, k;
@@ -1081,8 +1083,6 @@ int main() {
         }
         if(guide == "quit")break;
         input = stoi(guide);
-        /*cin.clear();
-        cin.ignore(INT_MAX, '\n');*/
         switch (input) {
             case 0:
                 cout << "To go back at any moment just write back\n"

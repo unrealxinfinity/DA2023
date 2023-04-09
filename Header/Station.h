@@ -1,7 +1,3 @@
-//
-// Created by migue on 10/03/2023.
-//
-
 #ifndef UNTITLED4_STATION_H
 #define UNTITLED4_STATION_H
 
@@ -22,7 +18,6 @@ class Station {
 public:
     Station();
     Station(string name, string District, string Municipality, string Township, string Line);
-    Station(string name);
     bool operator<(const Station & Station) const; // required by priorityQueue
     bool operator==(const Station &other ) const;
 
@@ -40,9 +35,7 @@ public:
     int getAdj_cap() const;
     int getInc_flow() const;
     Network* getPath() const;
-    PointerNetworks getIncoming() const;
 
-    void setName(string name);
     void setVisited(bool visited);
     void setProcesssing(bool processing);
     void setIndegree(unsigned int indegree);
@@ -63,7 +56,7 @@ public:
     Network addNetwork(Station* dest, int w, string service);
     /**
      * Auxiliary method to Graph::remove_network(). <br>
-     * Removes the network connecting this Station to the Station \p destName from the #adj and #incloming of both Stations.
+     * Removes the network connecting this Station to the Station \p destName from the #adj and #incoming of both Stations.
      * @param destName Destination(sink) of the network to be removed.
      * @note Time Complexity O(1).
      */
@@ -82,8 +75,8 @@ protected:
     Network* path;
 
 public:
-    PointerNetworks incoming; /**< Unordered map of all Networks comming into this Station (value), indexed by the networks's source name(key). See also #PointerNetworks. */
-    Networks adj; /**< Unordered map of all Networks comming out of this Station (value), indexed by the networks's sink name(key). See also #Networks. */
+    PointerNetworks incoming; /**< Unordered map of all Networks comming into this Station (value), indexed by the networks's source name(key). <br> See also #PointerNetworks. */
+    Networks adj; /**< Unordered map of all Networks comming out of this Station (value), indexed by the networks's sink name(key). <br> See also #Networks. */
 };
 
 #endif //UNTITLED4_STATION_H
